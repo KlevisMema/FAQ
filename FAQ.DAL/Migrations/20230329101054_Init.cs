@@ -61,6 +61,18 @@ namespace FAQ.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LogTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LogTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tags",
                 columns: table => new
                 {
@@ -205,6 +217,27 @@ namespace FAQ.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Logs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MethodName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Exception = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    LogTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Logs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Logs_LogTypes_LogTypeId",
+                        column: x => x.LogTypeId,
+                        principalTable: "LogTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Answers",
                 columns: table => new
                 {
@@ -248,7 +281,7 @@ namespace FAQ.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QuestionTags", x => new { x.TagId, x.QuestionId });
+                    table.PrimaryKey("PK_QuestionTags", x => new { x.QuestionId, x.TagId });
                     table.ForeignKey(
                         name: "FK_QuestionTags_Questions_QuestionId",
                         column: x => x.QuestionId,
@@ -318,14 +351,19 @@ namespace FAQ.DAL.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Logs_LogTypeId",
+                table: "Logs",
+                column: "LogTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Questions_UserId",
                 table: "Questions",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_QuestionTags_QuestionId",
+                name: "IX_QuestionTags_TagId",
                 table: "QuestionTags",
-                column: "QuestionId");
+                column: "TagId");
         }
 
         /// <inheritdoc />
@@ -350,19 +388,25 @@ namespace FAQ.DAL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Logs");
+
+            migrationBuilder.DropTable(
                 name: "QuestionTags");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "LogTypes");
+
+            migrationBuilder.DropTable(
                 name: "Questions");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Tags");
 
             migrationBuilder.DropTable(
-                name: "Tags");
+                name: "AspNetUsers");
         }
     }
 }

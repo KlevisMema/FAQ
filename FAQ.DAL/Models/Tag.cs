@@ -11,8 +11,6 @@ namespace FAQ.DAL.Models
         [Required]
         public string Name { get; set; } = string.Empty;
 
-        public virtual ICollection<Question>? Questions { get; set; }
-
         public virtual ICollection<QuestionTag>? QuestionTags { get; set; }
     }
 }

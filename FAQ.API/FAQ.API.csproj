@@ -4,9 +4,12 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.4" />
@@ -24,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FAQ.BLL\FAQ.BLL.csproj" />
+    <ProjectReference Include="..\FAQ.BLL\FAQ.SERVICES.csproj" />
     <ProjectReference Include="..\FAQ.DAL\FAQ.DAL.csproj" />
   </ItemGroup>
 

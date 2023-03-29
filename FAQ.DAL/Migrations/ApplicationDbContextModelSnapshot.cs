@@ -65,6 +65,48 @@ namespace FAQ.DAL.Migrations
                     b.ToTable("Answers");
                 });
 
+            modelBuilder.Entity("FAQ.DAL.Models.Log", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Exception")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("LogTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MethodName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LogTypeId");
+
+                    b.ToTable("Logs");
+                });
+
+            modelBuilder.Entity("FAQ.DAL.Models.LogType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LogTypes");
+                });
+
             modelBuilder.Entity("FAQ.DAL.Models.Question", b =>
                 {
                     b.Property<Guid>("Id")
@@ -88,15 +130,10 @@ namespace FAQ.DAL.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Question");
 
-                    b.Property<Guid?>("TagId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TagId");
 
                     b.HasIndex("UserId");
 
@@ -105,15 +142,15 @@ namespace FAQ.DAL.Migrations
 
             modelBuilder.Entity("FAQ.DAL.Models.QuestionTag", b =>
                 {
-                    b.Property<Guid>("TagId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("QuestionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("TagId", "QuestionId");
+                    b.Property<Guid>("TagId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasIndex("QuestionId");
+                    b.HasKey("QuestionId", "TagId");
+
+                    b.HasIndex("TagId");
 
                     b.ToTable("QuestionTags");
                 });
@@ -405,6 +442,17 @@ namespace FAQ.DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FAQ.DAL.Models.Log", b =>
+                {
+                    b.HasOne("FAQ.DAL.Models.LogType", "LogType")
+                        .WithMany("Logs")
+                        .HasForeignKey("LogTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LogType");
+                });
+
             modelBuilder.Entity("FAQ.DAL.Models.Question", b =>
                 {
                     b.HasOne("FAQ.DAL.Models.User", "User")
@@ -489,6 +537,11 @@ namespace FAQ.DAL.Migrations
                     b.Navigation("ChildAnswers");
                 });
 
+            modelBuilder.Entity("FAQ.DAL.Models.LogType", b =>
+                {
+                    b.Navigation("Logs");
+                });
+
             modelBuilder.Entity("FAQ.DAL.Models.Question", b =>
                 {
                     b.Navigation("Answers");
@@ -499,8 +552,6 @@ namespace FAQ.DAL.Migrations
             modelBuilder.Entity("FAQ.DAL.Models.Tag", b =>
                 {
                     b.Navigation("QuestionTags");
-
-                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("FAQ.DAL.Models.User", b =>
