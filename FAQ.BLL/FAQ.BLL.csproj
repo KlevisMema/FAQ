@@ -21,10 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="RepositoryService\Interfaces\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\FAQ.DAL\FAQ.DAL.csproj" />
     <ProjectReference Include="..\FAQ.DTO\FAQ.DTO.csproj" />
   </ItemGroup>

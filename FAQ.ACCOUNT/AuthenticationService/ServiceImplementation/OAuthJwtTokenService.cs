@@ -1,17 +1,29 @@
-﻿using FAQ.DTO.UserDtos;
-using FAQ.SERVICES.AuthenticationService.ServiceInterface;
+﻿#region Usings
+using System.Text;
+using FAQ.DTO.UserDtos;
+using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using FAQ.ACCOUNT.AuthenticationService.ServiceInterface;
+#endregion
 
-namespace FAQ.SERVICES.AuthenticationService.ServiceImplementation
+namespace FAQ.ACCOUNT.AuthenticationService.ServiceImplementation
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class OAuthJwtTokenService : IOAuthJwtTokenService
     {
+        /// <summary>
+        /// 
+        /// </summary>
         private readonly IOptions<AuthenticationSettings> _jwtOptions;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="jwtOptions"></param>
         public OAuthJwtTokenService
         (
             IOptions<AuthenticationSettings> jwtOptions
@@ -20,12 +32,14 @@ namespace FAQ.SERVICES.AuthenticationService.ServiceImplementation
             _jwtOptions = jwtOptions;
         }
 
+        #region Methods 
+
         /// <summary>
         ///     Serialize a token in a string fromat (Jwt format)
         /// </summary>
         /// <param name="user"> User View Model object</param>
         /// <returns>Token</returns>
-        public string CreateToken(UserViewModel user)
+        public string CreateToken(DtoUser user)
         {
             var singinCredentials = GetSinginCredentials();
             var claims = GetClaims(user);
@@ -49,7 +63,7 @@ namespace FAQ.SERVICES.AuthenticationService.ServiceImplementation
         ///     Creates a list of claims
         /// </summary>
         /// <returns>List of claims</returns>
-        private List<Claim> GetClaims(UserViewModel user)
+        private List<Claim> GetClaims(DtoUser user)
         {
             var claims = new List<Claim>
             {
@@ -82,6 +96,8 @@ namespace FAQ.SERVICES.AuthenticationService.ServiceImplementation
             );
 
             return token;
-        }
+        } 
+
+        #endregion
     }
 }

@@ -4,12 +4,12 @@ using FAQ.DAL.Models;
 using FAQ.DTO.UserDtos;
 using FAQ.SHARED.ResponseTypes;
 using Microsoft.AspNetCore.Identity;
-using FAQ.SERVICES.AuthorizationService.Interfaces;
-using FAQ.SERVICES.AuthenticationService.ServiceInterface;
-using FAQ.DAL.DataBase;
+using FAQ.SERVICES.RepositoryService.Interfaces;
+using FAQ.ACCOUNT.AuthorizationService.Interfaces;
+using FAQ.ACCOUNT.AuthenticationService.ServiceInterface;
 #endregion
 
-namespace FAQ.SERVICES.AuthorizationService.Implementation
+namespace FAQ.ACCOUNT.AuthorizationService.Implementation
 {
     public class LoginService : ILoginService
     {
@@ -31,9 +31,9 @@ namespace FAQ.SERVICES.AuthorizationService.Implementation
         /// </summary>
         private readonly SignInManager<User> _signInManager;
         /// <summary>
-        ///     Database context
+        ///     Log service
         /// </summary>
-        private readonly ApplicationDbContext _db;
+        private readonly ILogService _log;
 
         /// <summary>
         ///     Inject all services in constructor
@@ -41,20 +41,21 @@ namespace FAQ.SERVICES.AuthorizationService.Implementation
         /// <param name="oAuthService"> OAuth service </param>
         /// <param name="userManager"> User Manager service </param>
         /// <param name="signInManager"> Sign In service </param>
+        /// <param name="db"> Log service </param>
         public LoginService
         (
-            IOAuthJwtTokenService oAuthService,
+            IMapper mapper,
+            ILogService log,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            IMapper mapper
-,
-            ApplicationDbContext db)
+            IOAuthJwtTokenService oAuthService
+        )
         {
+            _log = log;
+            _mapper = mapper;
             _userManager = userManager;
             _oAuthService = oAuthService;
             _signInManager = signInManager;
-            _mapper = mapper;
-            _db = db;
         }
         #endregion
 
@@ -65,42 +66,49 @@ namespace FAQ.SERVICES.AuthorizationService.Implementation
         /// </summary>
         /// <param name="logIn"> Login object </param>
 
-        public async Task<CommonResponse<LoginViewModel>> Login
+        public async Task<CommonResponse<DtoLogin>> Login
         (
-            LoginViewModel logIn
+            DtoLogin logIn
         )
         {
             try
             {
+                var user = await _userManager.FindByEmailAsync(logIn.Email);
+
+                if (user is null)
+                    return CommonResponse<DtoLogin>.Response("User doesn't exists !!", false, System.Net.HttpStatusCode.NotFound, logIn);
+
+                var emailConfirmed = await _userManager.IsEmailConfirmedAsync(user!);
+
+                if (!emailConfirmed)
+                    return CommonResponse<DtoLogin>.Response("You haven't confirmed you email yet!", false, System.Net.HttpStatusCode.NotFound, logIn);
+
                 var result = await _signInManager.PasswordSignInAsync(logIn.Email, logIn.Password, false, false);
 
                 if (result.Succeeded)
                 {
-                    var user = await _userManager.FindByEmailAsync(logIn.Email);
-
-                    if (user == null)
-                        CommonResponse<LoginViewModel>.Response("User doesn't exists !!", false, System.Net.HttpStatusCode.NotFound, new LoginViewModel());
-
                     var roles = await _userManager.GetRolesAsync(_mapper.Map<User>(logIn));
 
                     if (roles.Count == 0)
-                        CommonResponse<LoginViewModel>.Response("User doesn't have any role !!", false, System.Net.HttpStatusCode.NotFound, new LoginViewModel());
+                        return CommonResponse<DtoLogin>.Response("User doesn't have any role !!", false, System.Net.HttpStatusCode.NotFound, logIn);
 
-                    var userTransformedObj = new UserViewModel()
+                    var userTransformedObj = new DtoUser()
                     {
                         Id = user!.Id,
                         Email = logIn.Email,
                         Roles = roles.ToList(),
                     };
 
-                    return CommonResponse<LoginViewModel>.Response($"{_oAuthService.CreateToken(userTransformedObj)}", true, System.Net.HttpStatusCode.OK, logIn);
+                    return CommonResponse<DtoLogin>.Response($"{_oAuthService.CreateToken(userTransformedObj)}", true, System.Net.HttpStatusCode.OK, logIn);
                 }
 
-                return CommonResponse<LoginViewModel>.Response("User login attempt failed", false, System.Net.HttpStatusCode.BadRequest, new LoginViewModel());
+                return CommonResponse<DtoLogin>.Response("Invalid credentials", false, System.Net.HttpStatusCode.BadRequest, new DtoLogin());
             }
             catch (Exception ex)
             {
-                return CommonResponse<LoginViewModel>.Response("Iternal server error", false, System.Net.HttpStatusCode.InternalServerError, new LoginViewModel());
+                await _log.CreateLogException(ex, "Log In", null);
+
+                return CommonResponse<DtoLogin>.Response("Iternal server error", false, System.Net.HttpStatusCode.InternalServerError, new DtoLogin());
             }
         }
 

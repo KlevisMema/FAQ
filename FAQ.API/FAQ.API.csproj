@@ -27,7 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FAQ.BLL\FAQ.SERVICES.csproj" />
+    <ProjectReference Include="..\FAQ.ACCOUNT\FAQ.ACCOUNT.csproj" />
+    <ProjectReference Include="..\FAQ.BLL\FAQ.BLL.csproj" />
     <ProjectReference Include="..\FAQ.DAL\FAQ.DAL.csproj" />
   </ItemGroup>
 

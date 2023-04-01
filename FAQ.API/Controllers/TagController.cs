@@ -2,11 +2,10 @@
 
 namespace FAQ.API.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class TagController : Controller
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
     }
 }

@@ -10,11 +10,11 @@ namespace FAQ.DTO.Mappings
         public UserMappings()
         {
 
-            CreateMap<RegisterViewModel, User>()
+            CreateMap<DtoRegister, User>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email));
-            CreateMap<LoginViewModel, User>();
+            CreateMap<DtoLogin, User>();
 
-            CreateMap<IdentityRole, RolesViewModel>()
+            CreateMap<IdentityRole, DtoRoles>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
         }

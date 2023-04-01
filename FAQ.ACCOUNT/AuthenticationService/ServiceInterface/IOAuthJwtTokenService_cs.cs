@@ -1,6 +1,6 @@
 ﻿using FAQ.DTO.UserDtos;
 
-namespace FAQ.SERVICES.AuthenticationService.ServiceInterface
+namespace FAQ.ACCOUNT.AuthenticationService.ServiceInterface
 {
     public interface IOAuthJwtTokenService
     {
@@ -9,6 +9,6 @@ namespace FAQ.SERVICES.AuthenticationService.ServiceInterface
         /// </summary>
         /// <param name="user"> User View Model object</param>
         /// <returns>Token</returns>
-        string CreateToken(UserViewModel user);
+        string CreateToken(DtoUser user);
     }
 }

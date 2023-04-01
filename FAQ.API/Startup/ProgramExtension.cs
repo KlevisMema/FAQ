@@ -1,23 +1,40 @@
-﻿using FAQ.DAL.DataBase;
+﻿#region Usings
+using System.Text;
 using FAQ.DAL.Models;
-using FAQ.SERVICES.AuthenticationService;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using FAQ.DTO.Mappings;
+using FAQ.DAL.DataBase;
+using System.Reflection;
+using Microsoft.OpenApi.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using System.Reflection;
-using FAQ.DTO.Mappings;
-using FAQ.SERVICES.AuthorizationService.Interfaces;
-using FAQ.SERVICES.AuthorizationService.Implementation;
-using FAQ.SERVICES.AuthenticationService.ServiceInterface;
-using FAQ.SERVICES.AuthenticationService.ServiceImplementation;
+using FAQ.ACCOUNT.AuthenticationService;
+using FAQ.SERVICES.RepositoryService.Interfaces;
+using FAQ.ACCOUNT.AuthorizationService.Interfaces;
+using FAQ.SERVICES.RepositoryService.Implementation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using FAQ.ACCOUNT.AuthenticationService.ServiceInterface;
+using FAQ.ACCOUNT.AuthenticationService.ServiceImplementation;
+using FAQ.ACCOUNT.AuthorizationService.Implementation;
+using FAQ.ACCOUNT.AccountService.ServiceInterface;
+using FAQ.ACCOUNT.AccountService.ServiceImplementation;
+#endregion
 
 namespace FAQ.API.Startup
 {
+    /// <summary>
+    ///     A static class that provides a extension of services registration
+    /// </summary>
     public static class ProgramExtension
     {
+        #region Method
+
+        /// <summary>
+        ///     Injects all services method
+        /// </summary>
+        /// <param name="Services">Services</param>
+        /// <param name="Configuration">Configuration</param>
+        /// <returns> Registered Services </returns>
         public static IServiceCollection InjectServices(this IServiceCollection Services, IConfiguration Configuration)
         {
             Services.AddControllers();
@@ -29,7 +46,7 @@ namespace FAQ.API.Startup
 
             Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            Services.AddIdentity<User, IdentityRole>(options => options.SignIn.RequireConfirmedEmail = false)
+            Services.AddIdentity<User, IdentityRole>(options => options.SignIn.RequireConfirmedEmail = true)
                             .AddEntityFrameworkStores<ApplicationDbContext>();
 
             Services.AddAuthentication(options =>
@@ -102,11 +119,15 @@ namespace FAQ.API.Startup
 
             Services.AddAutoMapper(typeof(UserMappings));
 
+            Services.AddTransient<ILogService, LogService>();
             Services.AddTransient<ILoginService, LoginService>();
+            Services.AddTransient<IAccountService, AccountService>();
             Services.AddTransient<IRegisterService, RegisterService>();
             Services.AddTransient<IOAuthJwtTokenService, OAuthJwtTokenService>();
 
             return Services;
         }
+
+        #endregion
     }
 }

@@ -1,23 +1,29 @@
-﻿using FAQ.DTO.UserDtos;
-using FAQ.SERVICES.AuthorizationService.Interfaces;
+﻿#region Usings
+
+using FAQ.DTO.UserDtos;
 using FAQ.SHARED.ResponseTypes;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using FAQ.ACCOUNT.AuthorizationService.Interfaces;
+
+#endregion
 
 namespace FAQ.API.Controllers
 {
     /// <summary>
-    /// 
+    ///     A authentication contoller for login and logout
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
+        #region Services Injection
+
         private readonly ILoginService _loginService;
         private readonly IRegisterService _registerService;
 
         /// <summary>
-        /// 
+        ///     Register ILoginService and IRegisterService
         /// </summary>
         /// <param name="loginService"></param>
         /// <param name="registerService"></param>
@@ -27,7 +33,9 @@ namespace FAQ.API.Controllers
             _registerService = registerService;
         }
 
-        #region Register 
+        #endregion
+
+        #region Register Endpoint
 
         /// <summary>
         ///     Register a user 
@@ -40,9 +48,9 @@ namespace FAQ.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
-        public async Task<ActionResult<CommonResponse<RegisterViewModel>>> Register
+        public async Task<ActionResult<CommonResponse<DtoRegister>>> Register
         (
-            [FromForm] RegisterViewModel register,
+            [FromForm] DtoRegister register,
             CancellationToken cancellationToken
         )
         {
@@ -57,11 +65,12 @@ namespace FAQ.API.Controllers
 
         #endregion
 
+        #region Login Endpoint
+
         /// <summary>
         ///     Login a user
         /// </summary>
         /// <param name="logIn"> Login data object </param>
-        /// <param name="cancellationToken"> Cancellation token </param>
 
         [AllowAnonymous]
         [HttpPost("Login")]
@@ -69,10 +78,9 @@ namespace FAQ.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
-        public async Task<ActionResult<CommonResponse<LoginViewModel>>> LogIn
+        public async Task<ActionResult<CommonResponse<DtoLogin>>> LogIn
         (
-            [FromForm] LoginViewModel logIn,
-            CancellationToken cancellationToken
+            [FromForm] DtoLogin logIn
         )
         {
             if (!ModelState.IsValid)
@@ -82,5 +90,7 @@ namespace FAQ.API.Controllers
 
             return result;
         }
+
+        #endregion
     }
 }

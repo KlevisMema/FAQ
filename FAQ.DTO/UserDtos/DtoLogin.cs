@@ -2,7 +2,7 @@
 
 namespace FAQ.DTO.UserDtos
 {
-    public class LoginViewModel
+    public class DtoLogin
     {
         [Required(ErrorMessage = "Email field is required ")]
         [EmailAddress(ErrorMessage = "Email is not a vaild email format")]

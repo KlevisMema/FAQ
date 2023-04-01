@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FAQ.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230329101054_Init")]
-    partial class Init
+    [Migration("20230330133045_ChangedTheNameOfPropOfLogDescription")]
+    partial class ChangedTheNameOfPropOfLogDescription
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -70,16 +70,18 @@ namespace FAQ.DAL.Migrations
 
             modelBuilder.Entity("FAQ.DAL.Models.Log", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<string>("Exception")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("LogTypeId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("LogTypeId")
+                        .HasColumnType("int");
 
                     b.Property<string>("MethodName")
                         .IsRequired()
@@ -97,9 +99,11 @@ namespace FAQ.DAL.Migrations
 
             modelBuilder.Entity("FAQ.DAL.Models.LogType", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()

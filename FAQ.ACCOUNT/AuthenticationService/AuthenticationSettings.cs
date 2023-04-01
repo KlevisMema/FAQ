@@ -1,4 +1,4 @@
-﻿namespace FAQ.SERVICES.AuthenticationService
+﻿namespace FAQ.ACCOUNT.AuthenticationService
 {
     /// <summary>
     ///     Class used to desirialize the values from a json file

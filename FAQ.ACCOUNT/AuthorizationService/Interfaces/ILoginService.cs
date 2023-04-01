@@ -1,9 +1,9 @@
 ﻿#region Usings
 using FAQ.DTO.UserDtos;
-using FAQ.SHARED.ResponseTypes; 
+using FAQ.SHARED.ResponseTypes;
 #endregion
 
-namespace FAQ.SERVICES.AuthorizationService.Interfaces
+namespace FAQ.ACCOUNT.AuthorizationService.Interfaces
 {
     public interface ILoginService
     {
@@ -11,6 +11,6 @@ namespace FAQ.SERVICES.AuthorizationService.Interfaces
         ///     Log in a user and genereate a token
         /// </summary>
         /// <param name="logIn"> Login object </param>
-        Task<CommonResponse<LoginViewModel>> Login(LoginViewModel logIn);
+        Task<CommonResponse<DtoLogin>> Login(DtoLogin logIn);
     }
 }

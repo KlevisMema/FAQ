@@ -64,7 +64,8 @@ namespace FAQ.DAL.Migrations
                 name: "LogTypes",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -220,11 +221,12 @@ namespace FAQ.DAL.Migrations
                 name: "Logs",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     MethodName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Exception = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    LogTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    LogTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
