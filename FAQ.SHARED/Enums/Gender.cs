@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿#region Usings
+using System.Text.Json.Serialization;
+#endregion
 
 namespace FAQ.SHARED.Enums
 {

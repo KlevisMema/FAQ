@@ -1,10 +1,16 @@
-﻿using AutoMapper;
+﻿#region Usings
+using AutoMapper;
 using FAQ.DAL.Models;
 using FAQ.DTO.UserDtos;
 using Microsoft.AspNetCore.Identity;
+#endregion
 
 namespace FAQ.DTO.Mappings
 {
+    /// <summary>
+    ///     A user mapper class that provides transforming <see cref="User"/> types 
+    ///     to other types related to the user and the opposite.
+    /// </summary>
     public class UserMappings : Profile
     {
         public UserMappings()

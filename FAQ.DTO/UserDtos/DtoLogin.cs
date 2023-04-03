@@ -1,7 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region Usings
+using System.ComponentModel.DataAnnotations;
+#endregion
 
 namespace FAQ.DTO.UserDtos
 {
+    /// <summary>
+    ///     A dto used for login.
+    /// </summary>
     public class DtoLogin
     {
         [Required(ErrorMessage = "Email field is required ")]

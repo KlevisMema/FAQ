@@ -3,10 +3,10 @@ using System.Net;
 using System.Net.Mail;
 using FAQ.DTO.UserDtos;
 using FAQ.EMAIL.EmailService;
+using FAQ.SHARED.ResponseTypes;
+using FAQ.LOGGER.ServiceInterface;
 using Microsoft.Extensions.Options;
 using FAQ.EMAIL.EmailService.ServiceInterface;
-using FAQ.SHARED.ResponseTypes;
-using static System.Net.WebRequestMethods;
 #endregion
 
 namespace FAQ.HELPERS.Helpers.Email
@@ -21,13 +21,23 @@ namespace FAQ.HELPERS.Helpers.Email
         ///     Email settings
         /// </summary>
         private readonly IOptions<EmailSettings> _emailSettigs;
+        /// <summary>
+        ///     Log service
+        /// </summary>
+        private readonly ILogService _log;
 
         /// <summary>
         ///     Inject services in  ctor
         /// </summary>
         /// <param name="emailSettigs"> Email settigs/options </param>
-        public EmailSender(IOptions<EmailSettings> emailSettigs)
+        /// <param name="log"> Logger Service </param>
+        public EmailSender
+        (
+            ILogService log,
+            IOptions<EmailSettings> emailSettigs
+        )
         {
+            _log = log;
             _emailSettigs = emailSettigs;
         }
         #endregion
@@ -39,7 +49,11 @@ namespace FAQ.HELPERS.Helpers.Email
         /// </summary>
         /// <param name="userConfirmEmail"> User object Dto </param>
         /// <returns> nothing </returns>
-        public async Task<CommonResponse<string>> SendConfirmEmail(DtoUserConfirmEmail userConfirmEmail)
+        public async Task<CommonResponse<string>> SendConfirmEmail
+        (
+            DtoUserConfirmEmail userConfirmEmail,
+            string otp
+        )
         {
             try
             {
@@ -48,7 +62,7 @@ namespace FAQ.HELPERS.Helpers.Email
                     From = new MailAddress(_emailSettigs.Value.From),
                     Subject = "Email cofirmation",
                     IsBodyHtml = _emailSettigs.Value.IsBodyHtml,
-                    Body = $"Click this link to confirm your account https://localhost:7092/api/Account/ConfirmEmail/{userConfirmEmail.UserId}"
+                    Body = $"Your one time password is : {otp}"
                 };
 
                 message.To.Add(new MailAddress(userConfirmEmail.Email));
@@ -65,11 +79,15 @@ namespace FAQ.HELPERS.Helpers.Email
 
                 await smtpClient.SendMailAsync(message);
 
+                await _log.CreateLogAction($"User with email : {userConfirmEmail.Email} was sent an email with the otp : {otp}", "SendConfirmEmail", userConfirmEmail.UserId);
+
                 return CommonResponse<string>.Response($"An confirmation email was sent to the user : {userConfirmEmail.Email}", true, HttpStatusCode.OK, string.Empty);
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                await _log.CreateLogException(ex, "SendConfirmEmail", userConfirmEmail.UserId);
+
                 return CommonResponse<string>.Response($"Internal server error", false, HttpStatusCode.InternalServerError, string.Empty);
             }
         }

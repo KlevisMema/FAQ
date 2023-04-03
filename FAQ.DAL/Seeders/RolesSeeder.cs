@@ -8,15 +8,17 @@ using Microsoft.Extensions.DependencyInjection;
 namespace FAQ.DAL.Seeders
 {
     /// <summary>
-    ///     A Seeder class for roles
+    ///     A Seeder class for roles.
     /// </summary>
     public class RolesSeeder
     {
+        #region Method implementation
+
         /// <summary>
-        ///     Create roles
+        ///     Create roles, roles are recieved from appsettings.json.
         /// </summary>
-        /// <param name="applicationBuilder"> App Builder </param>
-        /// <param name="configuration"> Cofiguration </param>
+        /// <param name="applicationBuilder"> App Builder of type <see cref="IApplicationBuilder"/> </param>
+        /// <param name="configuration"> Cofiguration of type <see cref="IConfiguration"/> </param>
         /// <returns></returns>
         public static async Task SeedRolesAsync(IApplicationBuilder applicationBuilder, IConfiguration configuration)
         {
@@ -31,5 +33,7 @@ namespace FAQ.DAL.Seeders
             if (!await roleManager.RoleExistsAsync(configuration.GetSection("Roles:Employee").Value!))
                 await roleManager.CreateAsync(new IdentityRole(configuration.GetSection("Roles:Employee").Value!));
         }
+
+        #endregion
     }
 }

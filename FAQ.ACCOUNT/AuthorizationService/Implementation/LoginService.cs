@@ -3,31 +3,30 @@ using AutoMapper;
 using FAQ.DAL.Models;
 using FAQ.DTO.UserDtos;
 using FAQ.SHARED.ResponseTypes;
+using FAQ.LOGGER.ServiceInterface;
 using Microsoft.AspNetCore.Identity;
-using FAQ.SERVICES.RepositoryService.Interfaces;
 using FAQ.ACCOUNT.AuthorizationService.Interfaces;
 using FAQ.ACCOUNT.AuthenticationService.ServiceInterface;
 #endregion
 
 namespace FAQ.ACCOUNT.AuthorizationService.Implementation
 {
+    /// <summary>
+    ///     A service class providing the login functionality by implementing <see cref="ILoginService"/> interface
+    /// </summary>
     public class LoginService : ILoginService
     {
         #region Services Injection
-        /// <summary>
-        ///    A readonly field for Mapper service
-        /// </summary>
-        private readonly IMapper _mapper;
         /// <summary>
         ///   A readonly field for  Auth interface 
         /// </summary>
         private readonly IOAuthJwtTokenService _oAuthService;
         /// <summary>
-        ///   A readonly field for  User Manager
+        ///   A readonly field for  User Manager where UserManager is type of <see cref="UserManager{TUser}"/> where TUser is <see cref="User"/>
         /// </summary>
         private readonly UserManager<User> _userManager;
         /// <summary>
-        ///    A readonly field for Sign in manager
+        ///    A readonly field for Sign in manager where SignInManager is type of <see cref="SignInManager{TUser}"/> where TUser is <see cref="User"/>
         /// </summary>
         private readonly SignInManager<User> _signInManager;
         /// <summary>
@@ -41,10 +40,9 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
         /// <param name="oAuthService"> OAuth service </param>
         /// <param name="userManager"> User Manager service </param>
         /// <param name="signInManager"> Sign In service </param>
-        /// <param name="db"> Log service </param>
+        /// <param name="log"> Logger service </param>
         public LoginService
         (
-            IMapper mapper,
             ILogService log,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
@@ -52,20 +50,19 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
         )
         {
             _log = log;
-            _mapper = mapper;
             _userManager = userManager;
             _oAuthService = oAuthService;
             _signInManager = signInManager;
         }
         #endregion
 
-        #region Method
+        #region Method implementation
 
         /// <summary>
-        ///     Log in a user and genereate a token
+        ///     Log in a user and genereate a token method implementation.
         /// </summary>
-        /// <param name="logIn"> Login object </param>
-
+        /// <param name="logIn"> Login object of type <see cref="DtoLogin"/> </param>
+        /// <returns> A object response of <see cref="CommonResponse{DtoLogin}"/> where <see langword="T"/> is <seealso cref="DtoLogin"/> </returns>
         public async Task<CommonResponse<DtoLogin>> Login
         (
             DtoLogin logIn

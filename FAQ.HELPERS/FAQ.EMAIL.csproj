@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FAQ.DTO\FAQ.DTO.csproj" />
+    <ProjectReference Include="..\FAQ.LOGGER\FAQ.LOGGER.csproj" />
   </ItemGroup>
 
 </Project>

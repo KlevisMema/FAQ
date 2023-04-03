@@ -1,12 +1,10 @@
 ﻿#region Usings
 using FAQ.DAL.Models;
 using FAQ.DAL.DataBase;
-using FAQ.SERVICES.RepositoryService.Interfaces;
-using System.Reflection;
-using System;
+using FAQ.LOGGER.ServiceInterface;
 #endregion
 
-namespace FAQ.SERVICES.RepositoryService.Implementation
+namespace FAQ.LOGGER.ServiceImplementation
 {
     /// <summary>
     ///   A service class providing the logging by implemeting the ILogService interface.

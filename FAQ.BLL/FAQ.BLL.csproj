@@ -25,4 +25,8 @@
     <ProjectReference Include="..\FAQ.DTO\FAQ.DTO.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="RepositoryService\Interfaces\" />
+  </ItemGroup>
+
 </Project>

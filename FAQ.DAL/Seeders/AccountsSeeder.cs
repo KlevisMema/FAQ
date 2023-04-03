@@ -3,21 +3,23 @@ using FAQ.DAL.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection; 
+using Microsoft.Extensions.DependencyInjection;
 #endregion
 
 namespace FAQ.DAL.Seeders
 {
     /// <summary>
-    ///     A Seeder Class for users 
+    ///     A Seeder Class for users.
     /// </summary>
     public class AccountsSeeder
     {
+        #region Method implementation
+
         /// <summary>
-        ///     Seed Users with roles
+        ///     Seed Users with roles, users are retrieved from appsettings.json.
         /// </summary>
-        /// <param name="applicationBuilder"> App Builder </param>
-        /// <param name="configuration"> Configuration </param>
+        /// <param name="applicationBuilder"> App Builder of type <see cref="IApplicationBuilder"/> </param>
+        /// <param name="configuration"> Configuration of type <see cref="IConfiguration"/> </param>
         /// <returns> Nothing </returns>
         public static async Task SeedUsersAsync(IApplicationBuilder applicationBuilder, IConfiguration configuration)
         {
@@ -54,5 +56,7 @@ namespace FAQ.DAL.Seeders
                 }
             }
         }
+
+        #endregion
     }
 }

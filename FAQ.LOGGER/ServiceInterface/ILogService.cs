@@ -1,6 +1,4 @@
-﻿using FAQ.DAL.Models;
-
-namespace FAQ.SERVICES.RepositoryService.Interfaces
+﻿namespace FAQ.LOGGER.ServiceInterface
 {
     /// <summary>
     ///     A service interface providing the logging

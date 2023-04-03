@@ -35,12 +35,13 @@ namespace FAQ.API.Controllers
         ///     Confirm email of a user endpoint
         /// </summary>
         /// <param name="userId"> Id of the user </param>
+        /// <param name="otp"> one time password </param>
         /// <returns> A object response </returns>
 
         [HttpPost("ConfirmEmail/{userId}")]
-        public async Task<CommonResponse<string>> ConfrimEmail([FromRoute] Guid userId)
+        public async Task<CommonResponse<string>> ConfrimEmail([FromRoute] Guid userId, string otp)
         {
-            var confirmEmailResult = await _accountService.ConfirmEmail(userId.ToString());
+            var confirmEmailResult = await _accountService.ConfirmEmail(userId.ToString(), otp);
 
             return confirmEmailResult;
         }

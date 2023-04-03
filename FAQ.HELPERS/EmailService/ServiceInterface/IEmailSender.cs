@@ -8,6 +8,12 @@ namespace FAQ.EMAIL.EmailService.ServiceInterface
     /// </summary>
     public interface IEmailSender
     {
-        Task<CommonResponse<string>> SendConfirmEmail(DtoUserConfirmEmail userConfirmEmail);
+        /// <summary>
+        ///     Send email form email confirmation
+        /// </summary>
+        /// <param name="userConfirmEmail"> User object Dto </param>
+        /// <param name="otp"> One time password </param>
+        /// <returns> a object result </returns>
+        Task<CommonResponse<string>> SendConfirmEmail(DtoUserConfirmEmail userConfirmEmail, string otp);
     }
 }

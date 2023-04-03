@@ -11,18 +11,18 @@ using FAQ.ACCOUNT.AuthenticationService.ServiceInterface;
 namespace FAQ.ACCOUNT.AuthenticationService.ServiceImplementation
 {
     /// <summary>
-    ///     A class that provides a token generation, implements the IOAuthJwtTokenService interface.
+    ///     A class that provides a token generation, implements the <see cref="IOAuthJwtTokenService"/> interface.
     /// </summary>
     public class OAuthJwtTokenService : IOAuthJwtTokenService
     {
         #region Services Injection
         /// <summary>
-        ///     Jwt options/settings
+        ///     Jwt options/settings of type <see cref="IOptions{TOptions}"/> where T is <see cref="AuthenticationSettings"/>.
         /// </summary>
         private readonly IOptions<AuthenticationSettings> _jwtOptions;
 
         /// <summary>
-        ///     Inject options/settigs in the constructor
+        ///     Inject options/settigs in the constructor.
         /// </summary>
         /// <param name="jwtOptions"> Jwt oprtions/settings </param>
         public OAuthJwtTokenService
@@ -31,17 +31,20 @@ namespace FAQ.ACCOUNT.AuthenticationService.ServiceImplementation
         )
         {
             _jwtOptions = jwtOptions;
-        } 
+        }
         #endregion
 
-        #region Methods 
+        #region Methods implementations.
 
         /// <summary>
-        ///     Serialize a token in a string fromat (Jwt format)
+        ///     Serialize a token in a string fromat (Jwt format), method implementation.
         /// </summary>
-        /// <param name="user"> User View Model object</param>
-        /// <returns>Token</returns>
-        public string CreateToken(DtoUser user)
+        /// <param name="user"> User View Model object of type <see cref="DtoUser"/> </param>
+        /// <returns> Token of type <see cref="string"/></returns>
+        public string CreateToken
+        (
+            DtoUser user
+        )
         {
             var singinCredentials = GetSinginCredentials();
             var claims = GetClaims(user);
@@ -51,10 +54,12 @@ namespace FAQ.ACCOUNT.AuthenticationService.ServiceImplementation
         }
 
         /// <summary>
-        ///     Get jwt config key and hash it 
+        ///     Get jwt config key and hash it.
         /// </summary>
-        /// <returns>SigningCredentials hashed key</returns>
-        private SigningCredentials GetSinginCredentials()
+        /// <returns> <see cref="SigningCredentials"/> hashed key </returns>
+        private SigningCredentials GetSinginCredentials
+        (
+        )
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Value.Key));
 
@@ -62,10 +67,14 @@ namespace FAQ.ACCOUNT.AuthenticationService.ServiceImplementation
         }
 
         /// <summary>
-        ///     Creates a list of claims
+        ///     Creates a list of claims.
         /// </summary>
-        /// <returns>List of claims</returns>
-        private List<Claim> GetClaims(DtoUser user)
+        /// <param name="user"> User View Model object of type <see cref="DtoUser"/> </param>
+        /// <returns>List of claims <see cref="List{Claim}"/> where T is <seealso cref="Claim"/></returns>
+        private List<Claim> GetClaims
+        (
+            DtoUser user
+        )
         {
             var claims = new List<Claim>
             {
@@ -82,12 +91,16 @@ namespace FAQ.ACCOUNT.AuthenticationService.ServiceImplementation
         }
 
         /// <summary>
-        ///     Create a token with hashed credentials and a list of claims
+        ///     Create a token with hashed credentials and a list of claims.
         /// </summary>
-        /// <param name="singinCredentials">Hashed credentials</param>
-        /// <param name="claims">List of claims</param>
-        /// <returns>JwtSecurityToken</returns>
-        private JwtSecurityToken GenerateToken(SigningCredentials singinCredentials, List<Claim> claims)
+        /// <param name="singinCredentials"> Hashed credentials of type <see cref="SigningCredentials"/> </param>
+        /// <param name="claims"> List of claims of type <see cref="Claim"/> </param>
+        /// <returns> JwtSecurityToken of type <see cref="JwtSecurityToken"/> </returns>
+        private JwtSecurityToken GenerateToken
+        (
+            SigningCredentials singinCredentials,
+            List<Claim> claims
+        )
         {
             var token = new JwtSecurityToken
             (
@@ -98,7 +111,7 @@ namespace FAQ.ACCOUNT.AuthenticationService.ServiceImplementation
             );
 
             return token;
-        } 
+        }
 
         #endregion
     }

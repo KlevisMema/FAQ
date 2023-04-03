@@ -1,14 +1,17 @@
 ﻿#region Usings
 using FAQ.DAL.Models;
-using FAQ.SHARED.ResponseTypes;
-using Microsoft.AspNetCore.Identity;
-using FAQ.SERVICES.RepositoryService.Interfaces;
-using FAQ.ACCOUNT.AccountService.ServiceInterface;
 using FAQ.DAL.DataBase;
+using FAQ.SHARED.ResponseTypes;
+using FAQ.LOGGER.ServiceInterface;
+using Microsoft.AspNetCore.Identity;
+using FAQ.ACCOUNT.AccountService.ServiceInterface;
 #endregion
 
 namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
 {
+    /// <summary>
+    ///     A Service class providing account functionalities by implementing IAccountService interface.
+    /// </summary>
     public class AccountService : IAccountService
     {
         #region Services Injection
@@ -53,28 +56,39 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
 
         #endregion
 
-        #region Methods
+        #region Method implementation
 
         /// <summary>
-        ///     Confirm email of a user
+        ///     Confirm email of a user, method implementation.
         /// </summary>
-        /// <param name="userId"> Id of the user </param>
-        /// <returns> A Object response </returns>
-        public async Task<CommonResponse<string>> ConfirmEmail(string userId)
+        /// <param name="userId"> Id of the user of type <see cref="string"/> </param>
+        /// <param name="otp"> otp of type <see cref="string"/>  </param>
+        /// <returns> A Object response of type : <see cref="CommonResponse{T}"/> where T is <seealso cref="string"/> </returns>
+        public async Task<CommonResponse<string>> ConfirmEmail
+        (
+            string userId,
+            string otp
+        )
         {
             try
             {
+                if (String.IsNullOrEmpty(otp))
+                    return CommonResponse<string>.Response("Otp code is emprty !!", false, System.Net.HttpStatusCode.BadGateway, otp);
+
                 var user = await _userManager.FindByIdAsync(userId);
 
                 if (user == null)
                     return CommonResponse<string>.Response("User not found", false, System.Net.HttpStatusCode.NotFound, string.Empty);
+
+                if (!user.OTP.Equals(otp))
+                    return CommonResponse<string>.Response("Code incorrect", false, System.Net.HttpStatusCode.BadGateway, otp);
 
                 user.EmailConfirmed = true;
 
                 _db.Users.Update(user);
                 await _db.SaveChangesAsync();
 
-                return CommonResponse<string>.Response("User account confirmed succsessfully", true, System.Net.HttpStatusCode.OK, string.Empty);
+                return CommonResponse<string>.Response("User account confirmed succsessfully", true, System.Net.HttpStatusCode.OK, otp);
 
             }
             catch (Exception ex)

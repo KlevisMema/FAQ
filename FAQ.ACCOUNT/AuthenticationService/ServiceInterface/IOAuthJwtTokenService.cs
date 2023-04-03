@@ -1,4 +1,6 @@
-﻿using FAQ.DTO.UserDtos;
+﻿#region Usings
+using FAQ.DTO.UserDtos;
+#endregion
 
 namespace FAQ.ACCOUNT.AuthenticationService.ServiceInterface
 {
@@ -7,11 +9,16 @@ namespace FAQ.ACCOUNT.AuthenticationService.ServiceInterface
     /// </summary>
     public interface IOAuthJwtTokenService
     {
+        #region Method declarations
         /// <summary>
-        ///     Serialize a token in a string fromat (Jwt format)
+        ///     Serialize a token in a string fromat (Jwt format), method declaration.
         /// </summary>
-        /// <param name="user"> User View Model object</param>
-        /// <returns>Token</returns>
-        string CreateToken(DtoUser user);
+        /// <param name="user"> User View Model object of type <see cref="DtoUser"/> </param>
+        /// <returns> Token of type <see cref="string"/></returns>
+        string CreateToken
+        (
+            DtoUser user
+        );
+        #endregion
     }
 }

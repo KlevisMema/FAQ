@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FAQ.BLL\FAQ.BLL.csproj" />
     <ProjectReference Include="..\FAQ.DTO\FAQ.DTO.csproj" />
+    <ProjectReference Include="..\FAQ.HELPERS\FAQ.EMAIL.csproj" />
     <ProjectReference Include="..\FAQ.SHARED\FAQ.SHARED.csproj" />
   </ItemGroup>
 
