@@ -8,6 +8,7 @@ using FAQ.SERVICES.RepositoryService.Interfaces;
 using FAQ.ACCOUNT.AuthorizationService.Interfaces;
 using FAQ.DAL.DataBase;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 #endregion
 
 namespace FAQ.ACCOUNT.AuthorizationService.Implementation
@@ -31,6 +32,10 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
         ///     Database Context
         /// </summary>
         private readonly ApplicationDbContext _db;
+        /// <summary>
+        ///     Configuration 
+        /// </summary>
+        private readonly IConfiguration _configuration;
 
         /// <summary>
         ///     Log service
@@ -48,14 +53,16 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
         (
             IMapper mapper,
             ILogService log,
-            UserManager<User> userManager,
-            ApplicationDbContext db
+            ApplicationDbContext db,
+            IConfiguration configuration,
+            UserManager<User> userManager
         )
         {
+            _db = db;
             _log = log;
             _mapper = mapper;
             _userManager = userManager;
-            _db = db;
+            _configuration = configuration;
         }
 
         #endregion
@@ -76,11 +83,6 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
             {
                 var user = _mapper.Map<User>(register);
 
-                user.IsAdmin = false;
-                user.Created = DateTime.Now;
-                user.TwoFactorEnabled = false;
-                user.EmailConfirmed = false;
-
                 var result = await _userManager.CreateAsync(user, register.Password);
 
                 if (result.Succeeded)
@@ -98,13 +100,13 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
                     return CommonResponse<DtoRegister>.Response($"Register succsessful", true, System.Net.HttpStatusCode.OK, register);
                 }
 
-                return CommonResponse<DtoRegister>.Response("User registration attempt failed", false, System.Net.HttpStatusCode.BadRequest, new DtoRegister());
+                return CommonResponse<DtoRegister>.ResponseIdentity($"User registration attempt failed", false, System.Net.HttpStatusCode.BadRequest, register, result.Errors);
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "Register", null);
 
-                return CommonResponse<DtoRegister>.Response("Internal server error", false, System.Net.HttpStatusCode.InternalServerError, new DtoRegister());
+                return CommonResponse<DtoRegister>.Response("Internal server error", false, System.Net.HttpStatusCode.InternalServerError, register);
             }
         }
 

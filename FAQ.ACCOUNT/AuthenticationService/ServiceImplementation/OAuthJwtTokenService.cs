@@ -11,26 +11,28 @@ using FAQ.ACCOUNT.AuthenticationService.ServiceInterface;
 namespace FAQ.ACCOUNT.AuthenticationService.ServiceImplementation
 {
     /// <summary>
-    /// 
+    ///     A class that provides a token generation, implements the IOAuthJwtTokenService interface.
     /// </summary>
     public class OAuthJwtTokenService : IOAuthJwtTokenService
     {
+        #region Services Injection
         /// <summary>
-        /// 
+        ///     Jwt options/settings
         /// </summary>
         private readonly IOptions<AuthenticationSettings> _jwtOptions;
 
         /// <summary>
-        /// 
+        ///     Inject options/settigs in the constructor
         /// </summary>
-        /// <param name="jwtOptions"></param>
+        /// <param name="jwtOptions"> Jwt oprtions/settings </param>
         public OAuthJwtTokenService
         (
             IOptions<AuthenticationSettings> jwtOptions
         )
         {
             _jwtOptions = jwtOptions;
-        }
+        } 
+        #endregion
 
         #region Methods 
 

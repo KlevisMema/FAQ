@@ -4,20 +4,23 @@ using FAQ.DAL.Models;
 using FAQ.DTO.Mappings;
 using FAQ.DAL.DataBase;
 using System.Reflection;
+using FAQ.EMAIL.EmailService;
 using Microsoft.OpenApi.Models;
+using FAQ.HELPERS.Helpers.Email;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using FAQ.ACCOUNT.AuthenticationService;
+using FAQ.EMAIL.EmailService.ServiceInterface;
 using FAQ.SERVICES.RepositoryService.Interfaces;
 using FAQ.ACCOUNT.AuthorizationService.Interfaces;
+using FAQ.ACCOUNT.AccountService.ServiceInterface;
 using FAQ.SERVICES.RepositoryService.Implementation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using FAQ.ACCOUNT.AuthorizationService.Implementation;
+using FAQ.ACCOUNT.AccountService.ServiceImplementation;
 using FAQ.ACCOUNT.AuthenticationService.ServiceInterface;
 using FAQ.ACCOUNT.AuthenticationService.ServiceImplementation;
-using FAQ.ACCOUNT.AuthorizationService.Implementation;
-using FAQ.ACCOUNT.AccountService.ServiceInterface;
-using FAQ.ACCOUNT.AccountService.ServiceImplementation;
 #endregion
 
 namespace FAQ.API.Startup
@@ -41,6 +44,7 @@ namespace FAQ.API.Startup
             Services.AddEndpointsApiExplorer();
 
             Services.Configure<AuthenticationSettings>(Configuration.GetSection("Jwt"));
+            Services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
 
             var jwtSetting = Configuration.GetSection("Jwt");
 
@@ -120,6 +124,7 @@ namespace FAQ.API.Startup
             Services.AddAutoMapper(typeof(UserMappings));
 
             Services.AddTransient<ILogService, LogService>();
+            Services.AddTransient<IEmailSender, EmailSender>();
             Services.AddTransient<ILoginService, LoginService>();
             Services.AddTransient<IAccountService, AccountService>();
             Services.AddTransient<IRegisterService, RegisterService>();

@@ -2,6 +2,9 @@
 
 namespace FAQ.ACCOUNT.AuthenticationService.ServiceInterface
 {
+    /// <summary>
+    ///     A interface that provides a token generation.
+    /// </summary>
     public interface IOAuthJwtTokenService
     {
         /// <summary>

@@ -87,7 +87,7 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
 
                 if (result.Succeeded)
                 {
-                    var roles = await _userManager.GetRolesAsync(_mapper.Map<User>(logIn));
+                    var roles = await _userManager.GetRolesAsync(user);
 
                     if (roles.Count == 0)
                         return CommonResponse<DtoLogin>.Response("User doesn't have any role !!", false, System.Net.HttpStatusCode.NotFound, logIn);
@@ -102,7 +102,7 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
                     return CommonResponse<DtoLogin>.Response($"{_oAuthService.CreateToken(userTransformedObj)}", true, System.Net.HttpStatusCode.OK, logIn);
                 }
 
-                return CommonResponse<DtoLogin>.Response("Invalid credentials", false, System.Net.HttpStatusCode.BadRequest, new DtoLogin());
+                return CommonResponse<DtoLogin>.Response("Invalid credentials", false, System.Net.HttpStatusCode.BadRequest, logIn);
             }
             catch (Exception ex)
             {

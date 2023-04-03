@@ -30,6 +30,7 @@
     <ProjectReference Include="..\FAQ.ACCOUNT\FAQ.ACCOUNT.csproj" />
     <ProjectReference Include="..\FAQ.BLL\FAQ.BLL.csproj" />
     <ProjectReference Include="..\FAQ.DAL\FAQ.DAL.csproj" />
+    <ProjectReference Include="..\FAQ.HELPERS\FAQ.EMAIL.csproj" />
   </ItemGroup>
 
 </Project>

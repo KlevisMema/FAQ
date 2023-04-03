@@ -56,35 +56,6 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
         #region Methods
 
         /// <summary>
-        ///     Create a new role
-        /// </summary>
-        /// <param name="roleName"> Name of the role </param>
-        /// <param name="userId"> Id of the user </param>
-        /// <returns> A object resposne </returns>
-        public async Task<CommonResponse<string>> CreateRole(string roleName, string userId)
-        {
-            try
-            {
-                if (String.IsNullOrEmpty(roleName))
-                    return CommonResponse<string>.Response("Role name is empty", false, System.Net.HttpStatusCode.BadRequest, roleName);
-
-                var result = await _roleManager.CreateAsync(new IdentityRole { Name = roleName });
-
-                if (result.Succeeded)
-                    return CommonResponse<string>.Response("Role created succsessfully", true, System.Net.HttpStatusCode.OK, roleName);
-
-                return CommonResponse<string>.Response("Role created unsuccsessfully", false, System.Net.HttpStatusCode.BadRequest, roleName);
-
-            }
-            catch (Exception ex)
-            {
-                await _log.CreateLogException(ex, "Log In", Guid.Parse(userId));
-
-                return CommonResponse<string>.Response("Internal Server error.", false, System.Net.HttpStatusCode.InternalServerError, roleName);
-            }
-        }
-
-        /// <summary>
         ///     Confirm email of a user
         /// </summary>
         /// <param name="userId"> Id of the user </param>

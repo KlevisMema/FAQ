@@ -41,5 +41,8 @@ namespace FAQ.DTO.UserDtos
         [Phone]
         [Required]
         public string PhoneNumber { get; set; } = string.Empty;
+
+        [Required]
+        public string Adress { get; set; } = string.Empty;
     }
 }

@@ -37,8 +37,8 @@ namespace FAQ.API.Controllers
         /// <param name="userId"> Id of the user </param>
         /// <returns> A object response </returns>
 
-        [HttpPost("ConfirmEmail")]
-        public async Task<CommonResponse<string>> ConfrimEmail(Guid userId)
+        [HttpPost("ConfirmEmail/{userId}")]
+        public async Task<CommonResponse<string>> ConfrimEmail([FromRoute] Guid userId)
         {
             var confirmEmailResult = await _accountService.ConfirmEmail(userId.ToString());
 
