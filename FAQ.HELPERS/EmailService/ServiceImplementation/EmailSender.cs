@@ -12,11 +12,12 @@ using FAQ.EMAIL.EmailService.ServiceInterface;
 namespace FAQ.HELPERS.Helpers.Email
 {
     /// <summary>
-    ///     A class that provides email sending, implements IEmailSender interface.
+    ///     A class that provides email sending, implements <see cref="IEmailSender"/> interface.
     /// </summary>
     public class EmailSender : IEmailSender
     {
         #region Services Injection
+
         /// <summary>
         ///     Email settings
         /// </summary>
@@ -40,15 +41,16 @@ namespace FAQ.HELPERS.Helpers.Email
             _log = log;
             _emailSettigs = emailSettigs;
         }
+
         #endregion
 
-        #region Implementation
+        #region Methods Implementation
 
         /// <summary>
-        ///     Send email form email confirmation
+        ///     Send email form email confirmation, method  implementation.
         /// </summary>
-        /// <param name="userConfirmEmail"> User object Dto </param>
-        /// <returns> nothing </returns>
+        /// <param name="userConfirmEmail"> User object Dto of type <see cref="DtoUserConfirmEmail"/> </param>
+        /// <returns> <see cref="CommonResponse{T}"/> where T is <see cref="string"/> </returns>
         public async Task<CommonResponse<string>> SendConfirmEmail
         (
             DtoUserConfirmEmail userConfirmEmail,

@@ -15,16 +15,16 @@ namespace FAQ.DAL.Models
         #region Properties
 
         /// <summary>
-        ///     A guid property which has no default value.
-        ///     This property is configured to be the primary key of Question table.
+        ///     A <see cref="Guid"/> property which has no default value.
+        ///     This property is configured to be the primary key of Question table using <see cref="KeyAttribute"/>.
         ///     Will hold the id of question table.
         /// </summary>
         [Key]
         public Guid Id { get; set; }
         /// <summary>
-        ///     A string property which has a empty string as default value.
-        ///     This property is configured to be required/not null and the clumn name as "Question".
-        ///     Will hold the value of the question description.
+        ///     A string property which has a empty string as default value, <see cref="string.Empty"/>.
+        ///     This property is configured to be required/not null using <see cref="RequiredAttribute"/>, 
+        ///     and the clumn name as "Question" using <see cref="ColumnAttribute"/>. Will hold the value of the question description.
         /// </summary>
         [Required]
         [Column("Question")]
@@ -32,11 +32,13 @@ namespace FAQ.DAL.Models
         /// <summary>
         ///     A property used for inhertiance purposes with <see cref="Answer"/> model and lazy loading.
         ///     Will hold the Answers of a user.
+        ///     It's  nullable.
         /// </summary>
         public virtual ICollection<Answer>? Answers { get; set; }
         /// <summary>
         ///     A property used for inhertiance purposes with <see cref="QuestionTag"/> model and lazy loading.
         ///     Will hold the QuestionTags of a user.
+        ///     It's  nullable.
         /// </summary>
         public virtual ICollection<QuestionTag>? QuestionTags { get; set; }
 

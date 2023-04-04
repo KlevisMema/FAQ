@@ -8,6 +8,8 @@
     /// </summary>
     public class AccountSettings
     {
+        #region Properties
+
         /// <summary>
         ///     A constant property that has the section name in the appsettings.json.
         /// </summary>
@@ -51,6 +53,8 @@
         ///     A property that will hold the value of the username, 
         ///     default value a empty array.
         /// </summary>
-        public string[] Roles { get; set; } = new string[0];
+        public string[] Roles { get; set; } = new string[0]; 
+
+        #endregion
     }
 }

@@ -14,15 +14,15 @@ namespace FAQ.DAL.Models
         #region Properties
 
         /// <summary>
-        ///     A guid property which has no default value.
+        ///     A <see cref="Guid"/> property which has no default value.
         ///     This property is configured to be the primary key of Tag table.
         ///     Will hold the id of tag table.
         /// </summary>
         [Key]
         public Guid Id { get; set; }
         /// <summary>
-        ///     A string property which has a empty string as default value.
-        ///     This property is configured to be required/not null.
+        ///     A <see cref="string"/> property which has a empty string as default value, <see cref="string.Empty"/>.
+        ///     This property is configured to be required/not null using <see cref="RequiredAttribute"/>.
         ///     Will hold the value of the tag name.
         /// </summary>
         [Required]
@@ -30,6 +30,7 @@ namespace FAQ.DAL.Models
         /// <summary>
         ///     A property used for inhertiance purposes with <see cref="QuestionTag"/> model and lazy loading.
         ///     Will hold the QuestionTags of a user.
+        ///     This property it's nullable.
         /// </summary>
         public virtual ICollection<QuestionTag>? QuestionTags { get; set; }
 

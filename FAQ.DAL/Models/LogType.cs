@@ -12,20 +12,21 @@ namespace FAQ.DAL.Models
         #region Properties
 
         /// <summary>
-        ///     A int property which has no default value.
-        ///     This property is configured to be the primary key of Log table.
+        ///     A <see cref="int"/> property which has no default value.
+        ///     This property is configured to be the primary key of Log table using <see cref="KeyAttribute"/>.
         ///     Will hold the id of log type table.
         /// </summary>
         [Key]
         public int Id { get; set; }
         /// <summary>
-        ///     A string property which has a empty string as default value.
+        ///     A <see cref="string"/> property which has a empty string as default value, <see cref="string.Empty"/>.
         ///     Will hold the value of the name of log type.
         /// </summary>
         public string Name { get; set; } = string.Empty;
         /// <summary>
         ///     A property used for inhertiance purposes with <see cref="Log"/> model and lazy loading.
         ///     Will hold the logs of this log type.
+        ///     It's nullable.
         /// </summary>
         public virtual ICollection<Log>? Logs { get; set; }
 

@@ -10,19 +10,19 @@
         #region Properties
 
         /// <summary>
-        ///     A guid property which will hold the question id.
+        ///     A <see cref="Guid"/> property which will hold the question id.
         /// </summary>
         public Guid QuestionId { get; set; }
         /// <summary>
-        ///     A guid property which will hold the tag id.
+        ///     A <see cref="Guid"/> property which will hold the tag id.
         /// </summary>
         public Guid TagId { get; set; }
         /// <summary>
-        ///     A navigation property for question, nullable.
+        ///     A navigation property for <see cref="Question"/>, it's nullable.
         /// </summary>
         public Question? Question { get; set; }
         /// <summary>
-        ///     A navigation property for Tag, nullable.
+        ///     A navigation property for <see cref="Tag"/>, it's nullable.
         /// </summary>
         public Tag? Tag { get; set; }
 

@@ -15,7 +15,9 @@ namespace FAQ.DTO.Mappings
     {
         public UserMappings()
         {
+            #region Mappings
 
+            // It will translate the DtoRegister type to User type.
             CreateMap<DtoRegister, User>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.IsAdmin, opt => opt.MapFrom(src => false))
@@ -27,11 +29,15 @@ namespace FAQ.DTO.Mappings
                 .ForMember(dest => dest.Prefix, opt => opt.MapFrom(src => src.PhonePrefix))
                 .ForMember(dest => dest.Adress, opt => opt.MapFrom(src => src.Adress));
 
+            // It will translate the DtoLogin type to User type.
             CreateMap<DtoLogin, User>();
 
+            // It will translate the IdentityRole type to DtoRoles type.
             CreateMap<IdentityRole, DtoRoles>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.ToString()))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+
+            #endregion
         }
     }
 }

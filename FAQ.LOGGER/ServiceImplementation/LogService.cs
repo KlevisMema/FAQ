@@ -7,11 +7,11 @@ using FAQ.LOGGER.ServiceInterface;
 namespace FAQ.LOGGER.ServiceImplementation
 {
     /// <summary>
-    ///   A service class providing the logging by implemeting the ILogService interface.
+    ///   A service class providing the logging by implemeting the <see cref="ILogService"/> interface.
     /// </summary>
     public class LogService : ILogService
     {
-        #region Services innjection
+        #region Services injection
 
         /// <summary>
         ///     Database context
@@ -22,7 +22,10 @@ namespace FAQ.LOGGER.ServiceImplementation
         ///     Inject databaze in ctor.
         /// </summary>
         /// <param name="db"> Database object </param>
-        public LogService(ApplicationDbContext db)
+        public LogService
+        (
+            ApplicationDbContext db
+        )
         {
             _db = db;
         }
@@ -32,12 +35,18 @@ namespace FAQ.LOGGER.ServiceImplementation
         #region Methods implementation
 
         /// <summary>
-        ///     Create log exception and save in the database method implementation
+        ///     Create log exception and save in the database, method implementation.
         /// </summary>
-        /// <param name="ex">Exception</param>
-        /// <param name="methodName">  Name of the method </param>
+        /// <param name="ex"> Exception object of type <see cref="Exception"/> </param>
+        /// <param name="methodName"> Name of the method  of type <see cref="string"/> </param>
+        /// <param name="UserId"> Id of the user value of type <see cref="Guid"/> </param>
         /// <returns> Nothing </returns>
-        public async Task CreateLogException(Exception ex, string methodName, Guid? UserId)
+        public async Task CreateLogException
+        (
+            Exception ex,
+            string methodName,
+            Guid? UserId
+        )
         {
             try
             {
@@ -60,12 +69,18 @@ namespace FAQ.LOGGER.ServiceImplementation
         }
 
         /// <summary>
-        ///     Create log user actions and save in the database method implementation
+        ///     Create log user actions and save in the database, method implementation.
         /// </summary>
-        /// <param name="description"> Description of the method </param>
-        /// <param name="methodName"> Name of the method </param>
+        /// <param name="description"> Description of the action value of type <see cref="string"/> </param>
+        /// <param name="methodName"> Name of the method  of type <see cref="string"/> </param>
+        /// <param name="userId"> Id of the user value of type <see cref="Guid"/> </param>
         /// <returns> Nothing </returns>
-        public async Task CreateLogAction(string description, string methodName, Guid userId)
+        public async Task CreateLogAction
+        (
+            string description,
+            string methodName,
+            Guid userId
+        )
         {
             try
             {
@@ -89,10 +104,17 @@ namespace FAQ.LOGGER.ServiceImplementation
         }
 
         /// <summary>
-        ///     Save the exeption in a  file
+        ///     Save the exeption in a file if something 
+        ///     went wrong creating when logs.
         /// </summary>
-        /// <param name="ex"> The  exeption </param>
-        private void LogException(Exception ex, string method)
+        /// <param name="ex"> The exeption object of type <see cref="Exception"/> </param>
+        /// <param name="method"> Method value of type <see cref="string"/> </param>
+        /// <returns> Nothing </returns>
+        private void LogException
+        (
+            Exception ex,
+            string method
+        )
         {
             //string projectDirectory = Directory.GetParent(Directory.GetCurrentDirectory())!.Parent!.FullName;
             string projectDirectory = System.IO.Path.GetDirectoryName(typeof(LogService).Assembly.Location)!;
