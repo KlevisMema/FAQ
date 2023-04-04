@@ -9,7 +9,7 @@ builder.Services.InjectServices(builder.Configuration);
 
 var app = builder.Build();
 
-await AppBuildExtesion.CallSeedersAsync(app, builder.Configuration);
+await AfterAppBuildExtesion.CallSeedersAsync(app, builder.Configuration);
 
 if (app.Environment.IsDevelopment())
 {

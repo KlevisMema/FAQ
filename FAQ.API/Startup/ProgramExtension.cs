@@ -21,6 +21,7 @@ using FAQ.ACCOUNT.AuthorizationService.Implementation;
 using FAQ.ACCOUNT.AccountService.ServiceImplementation;
 using FAQ.ACCOUNT.AuthenticationService.ServiceInterface;
 using FAQ.ACCOUNT.AuthenticationService.ServiceImplementation;
+using FAQ.API.ControllerResponse;
 #endregion
 
 namespace FAQ.API.Startup
@@ -135,7 +136,7 @@ namespace FAQ.API.Startup
             Services.AddAutoMapper(typeof(UserMappings));
             #endregion
 
-            #region BLL, ACCOUNT, LOG Services
+            #region BLL, ACCOUNT, LOG and StatusCodeResponse Services registration.
             Services.AddTransient<ILogService, LogService>();
             Services.AddTransient<IEmailSender, EmailSender>();
             Services.AddTransient<ILoginService, LoginService>();

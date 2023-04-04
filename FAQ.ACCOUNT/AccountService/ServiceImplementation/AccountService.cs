@@ -73,7 +73,7 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
             try
             {
                 if (String.IsNullOrEmpty(otp))
-                    return CommonResponse<string>.Response("Otp code is emprty !!", false, System.Net.HttpStatusCode.BadGateway, otp);
+                    return CommonResponse<string>.Response("Otp code is emprty !!", false, System.Net.HttpStatusCode.NotFound, otp);
 
                 var user = await _userManager.FindByIdAsync(userId);
 
@@ -81,7 +81,7 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
                     return CommonResponse<string>.Response("User not found", false, System.Net.HttpStatusCode.NotFound, string.Empty);
 
                 if (!user.OTP.Equals(otp))
-                    return CommonResponse<string>.Response("Code incorrect", false, System.Net.HttpStatusCode.BadGateway, otp);
+                    return CommonResponse<string>.Response("Code incorrect", false, System.Net.HttpStatusCode.NotFound, otp);
 
                 user.EmailConfirmed = true;
 

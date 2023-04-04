@@ -8,7 +8,7 @@ namespace FAQ.DTO.UserDtos
     /// <summary>
     ///     A dto used for registering a user.
     ///     This  dto class represents the user table but only 
-    ///     with the necessary input properties.
+    ///     with the necessary properties.
     /// </summary>
     public class DtoRegister
     {

@@ -7,7 +7,7 @@ namespace FAQ.API.Startup
     /// <summary>
     ///     A static class that provides a extension of services registration after app is build.
     /// </summary>
-    public static class AppBuildExtesion
+    public static class AfterAppBuildExtesion
     {
         #region Methods
 
