@@ -22,6 +22,10 @@ using FAQ.ACCOUNT.AccountService.ServiceImplementation;
 using FAQ.ACCOUNT.AuthenticationService.ServiceInterface;
 using FAQ.ACCOUNT.AuthenticationService.ServiceImplementation;
 using FAQ.API.ControllerResponse;
+using AspNetCoreRateLimit;
+using FAQ.SECURITY.ApplicationAuthorizationService.ServiceImplementation;
+using FAQ.SECURITY.ApplicationAuthorizationService.ServiceInterface;
+using Microsoft.Extensions.DependencyInjection;
 #endregion
 
 namespace FAQ.API.Startup
@@ -34,7 +38,7 @@ namespace FAQ.API.Startup
         #region Method
 
         /// <summary>
-        ///     Injects all services method
+        ///     Injects all services
         /// </summary>
         /// <param name="Services"> Services collection </param>
         /// <param name="Configuration"> Configuration collection </param>
@@ -43,17 +47,29 @@ namespace FAQ.API.Startup
         {
             #region Default services
             Services.AddControllers();
+            Services.AddMemoryCache();
             Services.AddEndpointsApiExplorer();
+            #endregion
+
+            #region CORS
+            Services.AddCors(options =>
+                {
+                    options.AddPolicy(Configuration.GetSection("Cors:Policy:Name").Value!, builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                               .AllowAnyHeader()
+                               .AllowAnyMethod();
+                    });
+                });
             #endregion
 
             #region Settigs services
             Services.Configure<AuthenticationSettings>(Configuration.GetSection("Jwt"));
             Services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
+            var jwtSetting = Configuration.GetSection("Jwt");
             #endregion
 
-            var jwtSetting = Configuration.GetSection("Jwt");
-
-            #region Database and identity services
+            #region Database and Identity services
             Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             Services.AddIdentity<User, IdentityRole>(options => options.SignIn.RequireConfirmedEmail = true)
@@ -61,6 +77,14 @@ namespace FAQ.API.Startup
             #endregion
 
             #region Authentication services
+            // Add the custom auth filter, a filter that is used by all enpoints
+            Services.AddScoped<IApiKeyAuthorizationFilter>(provider =>
+            {
+                var config = provider.GetService<IConfiguration>();
+                string apikey = config!.GetValue<string>("API_KEY")!;
+                return new ApiKeyAuthorizationFilter(apikey);
+            });
+            // Cofigure Authetication
             Services.AddAuthentication(options =>
                {
                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -71,10 +95,10 @@ namespace FAQ.API.Startup
                {
                    options.TokenValidationParameters = new TokenValidationParameters
                    {
-                       ValidateAudience = true,
-                       ValidateIssuer = true,
-                       ValidateLifetime = true,
-                       ValidateIssuerSigningKey = true,
+                       ValidateAudience = Configuration.GetValue<bool>("Jwt:ValidateAudience"),
+                       ValidateIssuer = Configuration.GetValue<bool>("Jwt:ValidateIssuer"),
+                       ValidateLifetime = Configuration.GetValue<bool>("Jwt:ValidateLifetime"),
+                       ValidateIssuerSigningKey = Configuration.GetValue<bool>("Jwt:ValidateIssuerSigningKey"),
                        ValidIssuer = jwtSetting.GetSection("Issuer").Value,
                        ValidAudience = jwtSetting.GetSection("Audience").Value,
                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSetting.GetSection("Key").Value!)),
@@ -83,53 +107,87 @@ namespace FAQ.API.Startup
             #endregion
 
             #region Swagger service
-            Services.AddSwaggerGen(options =>
-               {
-                   options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                   {
-                       Description = @"Enter 'Bearer' [Space] and then your token in the input field below. 
-                                    Example : 'Bearer 1234dsfhj'",
-                       Name = "Authorization",
-                       In = ParameterLocation.Header,
-                       Type = SecuritySchemeType.ApiKey,
-                       Scheme = "Bearer",
-                       BearerFormat = "Jwt"
-                   });
 
-                   options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                  {
+            Services.AddSwaggerGen(options =>
+            {
+                #region Application Auth
+
+                // add support for api authentication, application level.
+                options.AddSecurityDefinition(Configuration.GetSection("Swagger:ApplicationAuth:SecurityDefinition:Definition").Value, new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Name = Configuration.GetSection("Swagger:ApplicationAuth:SecurityDefinition:Name").Value,
+                    Type = SecuritySchemeType.ApiKey,
+                    Description = Configuration.GetSection("Swagger:ApplicationAuth:SecurityDefinition:Description").Value
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = Configuration.GetSection("Swagger:ApplicationAuth:SecurityRequirement:Id").Value },
+                            Name = Configuration.GetSection("Swagger:ApplicationAuth:SecurityRequirement:Name").Value,
+                            In = ParameterLocation.Header
+                        },
+                        new List<string>()
+                    }
+                });
+
+                #endregion
+
+                #region Jwt Auth
+
+                // add support for JWT Bearer token authentication, user level.
+                options.AddSecurityDefinition(Configuration.GetSection("Swagger:JwtAuth:SecurityDefinition:Definition").Value, new OpenApiSecurityScheme
+                {
+                    Description = Configuration.GetSection("Swagger:JwtAuth:SecurityDefinition:Description").Value,
+                    Name = Configuration.GetSection("Swagger:JwtAuth:SecurityDefinition:Name").Value,
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = Configuration.GetSection("Swagger:JwtAuth:SecurityDefinition:Scheme").Value,
+                    BearerFormat = Configuration.GetSection("Swagger:JwtAuth:SecurityDefinition:BearerFormat").Value
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
                     {
                         new OpenApiSecurityScheme
                         {
                             Reference = new OpenApiReference
                             {
                                 Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
+                                Id = Configuration.GetSection("Swagger:JwtAuth:SecurityRequirement:Reference:Id").Value
                             },
-                            Scheme = "0auth2",
-                            Name = "Bearer",
+                            Scheme = Configuration.GetSection("Swagger:JwtAuth:SecurityRequirement:Scheme").Value,
+                            Name = Configuration.GetSection("Swagger:JwtAuth:SecurityRequirement:Name").Value,
                             In = ParameterLocation.Header,
                         },
                         new List<string>()
                     }
-                  });
+                });
 
-                   options.SwaggerDoc("v1", new OpenApiInfo
-                   {
-                       Version = "v1",
-                       Title = "FAQ API",
-                       License = new OpenApiLicense
-                       {
-                           Name = "Web Api created by Klevis Mema",
-                           Url = new Uri("https://www.linkedin.com/in/klevis-m-ab1b3b140/")
-                       }
-                   });
+                #endregion
 
-                   var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                   var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.SwaggerDoc(Configuration.GetSection("Swagger:Doc:Version").Value, new OpenApiInfo
+                {
+                    Version = Configuration.GetSection("Swagger:Doc:Version").Value,
+                    Title = Configuration.GetSection("Swagger:Doc:Tittle").Value,
+                    License = new OpenApiLicense
+                    {
+                        Name = Configuration.GetSection("Swagger:Doc:Licence:Name").Value,
+                        Url = new Uri(Configuration.GetSection("Swagger:Doc:Licence:Url-Linkedin").Value!)
+                    }
+                });
 
-                   options.IncludeXmlComments(xmlPath);
-               });
+                #region Xml Comments
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+                options.IncludeXmlComments(xmlPath);
+                #endregion
+            });
+
             #endregion
 
             #region Automapper services
@@ -143,6 +201,29 @@ namespace FAQ.API.Startup
             Services.AddTransient<IAccountService, AccountService>();
             Services.AddTransient<IRegisterService, RegisterService>();
             Services.AddTransient<IOAuthJwtTokenService, OAuthJwtTokenService>();
+            #endregion
+
+            #region Api Rate Limit
+
+            // Limit 100 requests per minute for all endpoints. 
+            Services.Configure<IpRateLimitOptions>(options =>
+                {
+                    options.GeneralRules = new List<RateLimitRule>
+                    {
+                        new RateLimitRule
+                        {
+                            Endpoint = "*",
+                            Limit = 100,
+                            PeriodTimespan = TimeSpan.FromMinutes(1)
+                        }
+                    };
+                });
+
+            Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
+            Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+
             #endregion
 
             return Services;

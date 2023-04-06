@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.4" />
@@ -27,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FAQ.ACCOUNT\FAQ.ACCOUNT.csproj" />
+    <ProjectReference Include="..\FAQ.ACCOUNT\FAQ.SECURITY.csproj" />
     <ProjectReference Include="..\FAQ.BLL\FAQ.BLL.csproj" />
     <ProjectReference Include="..\FAQ.DAL\FAQ.DAL.csproj" />
     <ProjectReference Include="..\FAQ.HELPERS\FAQ.EMAIL.csproj" />

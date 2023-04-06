@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using FAQ.ACCOUNT.AuthorizationService.Interfaces;
 using FAQ.API.ControllerResponse;
+using FAQ.SECURITY.ApplicationAuthorizationService.ServiceImplementation;
+using FAQ.SECURITY.ApplicationAuthorizationService.ServiceInterface;
 
 #endregion
 
@@ -14,9 +16,7 @@ namespace FAQ.API.Controllers
     /// <summary>
     ///     A authentication contoller providing endpoinnts for login and logout.
     /// </summary>
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AuthenticationController : BaseController
     {
         #region Services Injection
         /// <summary>

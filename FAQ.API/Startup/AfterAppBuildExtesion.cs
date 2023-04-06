@@ -1,4 +1,5 @@
 ﻿#region Usings
+using AspNetCoreRateLimit;
 using FAQ.DAL.Seeders;
 #endregion
 
@@ -9,21 +10,26 @@ namespace FAQ.API.Startup
     /// </summary>
     public static class AfterAppBuildExtesion
     {
-        #region Methods
+        #region Method
 
         /// <summary>
-        ///     Call  seed roles and seed users methods
+        ///     Use all middlewares and custom functions
+        ///     after app was builded.
         /// </summary>
         /// <param name="app"> Web app </param>
         /// <param name="Configuration"> A collection of configurations </param>
         /// <returns> Nothing </returns>
-        public static async Task CallSeedersAsync(this WebApplication app, IConfiguration Configuration)
+        public static async Task Extension(this WebApplication app, IConfiguration Configuration)
         {
             // Seed roles 
             await RolesSeeder.SeedRolesAsync(app, Configuration);
             // seed users
             await AccountsSeeder.SeedUsersAsync(app, Configuration);
-        } 
+            // A RateLimitMiddleWare 
+            app.UseIpRateLimiting();
+            // CORS MiddleWare
+            app.UseCors(Configuration.GetSection("Cors:Policy:Name").Value!);
+        }
 
         #endregion
     }

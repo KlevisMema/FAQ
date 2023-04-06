@@ -11,9 +11,7 @@ namespace FAQ.API.Controllers
     /// <summary>
     ///     A controller providing endpoints for user functionalities.
     /// </summary>
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AccountController : ControllerBase
+    public class AccountController : BaseController
     {
         #region Services Injection
 
