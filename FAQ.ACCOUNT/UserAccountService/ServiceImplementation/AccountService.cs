@@ -5,6 +5,8 @@ using FAQ.SHARED.ResponseTypes;
 using FAQ.LOGGER.ServiceInterface;
 using Microsoft.AspNetCore.Identity;
 using FAQ.ACCOUNT.AccountService.ServiceInterface;
+using FAQ.SHARED.ServicesMessageResponse;
+using Microsoft.Extensions.Options;
 #endregion
 
 namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
@@ -29,9 +31,13 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
         /// </summary>
         private readonly ApplicationDbContext _db;
         /// <summary>
-        ///     Role Manager Service
+        ///     Message response register 
         /// </summary>
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private AccountMessageResponse _accountMessageResponse { get; set; } = new();
+        /// <summary>
+        ///     Exception message response
+        /// </summary>
+        private string ExceptionMessageResponse { get; set; }
 
         /// <summary>
         ///     Services Injection
@@ -39,19 +45,20 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
         /// <param name="log"> Log Service </param>
         /// <param name="userManager"> User Manager Service </param>
         /// <param name="db"> Database Context </param>
-        /// <param name="roleManager"> Role Manager </param>
+        /// <param name="messageResponses"> Message response </param>
         public AccountService
         (
             ILogService log,
             ApplicationDbContext db,
             UserManager<User> userManager,
-            RoleManager<IdentityRole> roleManager
+            IOptions<ServiceMessageResponseContainer> messageResponses
         )
         {
             _db = db;
             _log = log;
             _userManager = userManager;
-            _roleManager = roleManager;
+            _accountMessageResponse = messageResponses.Value.AccountMessageResponse!;
+            ExceptionMessageResponse = messageResponses.Value.Exception;
         }
 
         #endregion
@@ -73,29 +80,29 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
             try
             {
                 if (String.IsNullOrEmpty(otp))
-                    return CommonResponse<string>.Response("Otp code is emprty !!", false, System.Net.HttpStatusCode.NotFound, otp);
+                    return CommonResponse<string>.Response(_accountMessageResponse.OtpEmpty, false, System.Net.HttpStatusCode.NotFound, otp);
 
                 var user = await _userManager.FindByIdAsync(userId);
 
                 if (user == null)
-                    return CommonResponse<string>.Response("User not found", false, System.Net.HttpStatusCode.NotFound, string.Empty);
+                    return CommonResponse<string>.Response(_accountMessageResponse.UserNotFound, false, System.Net.HttpStatusCode.NotFound, string.Empty);
 
                 if (!user.OTP.Equals(otp))
-                    return CommonResponse<string>.Response("Code incorrect", false, System.Net.HttpStatusCode.NotFound, otp);
+                    return CommonResponse<string>.Response(_accountMessageResponse.OtpCodeIncorrect, false, System.Net.HttpStatusCode.NotFound, otp);
 
                 user.EmailConfirmed = true;
 
                 _db.Users.Update(user);
                 await _db.SaveChangesAsync();
 
-                return CommonResponse<string>.Response("User account confirmed succsessfully", true, System.Net.HttpStatusCode.OK, otp);
+                return CommonResponse<string>.Response(_accountMessageResponse.AccountConfirmed, true, System.Net.HttpStatusCode.OK, otp);
 
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "Log In", Guid.Parse(userId));
 
-                return CommonResponse<string>.Response("Internal Server error.", false, System.Net.HttpStatusCode.InternalServerError, string.Empty);
+                return CommonResponse<string>.Response(ExceptionMessageResponse, false, System.Net.HttpStatusCode.InternalServerError, string.Empty);
             }
         }
 

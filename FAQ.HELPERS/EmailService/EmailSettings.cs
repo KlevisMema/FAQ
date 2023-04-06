@@ -5,6 +5,11 @@
     /// </summary>
     public class EmailSettings
     {
+        #region Properties
+        /// <summary>
+        ///     The name of the section 
+        /// </summary>
+        public const string SectionName = "EmailSettings";
         /// <summary>
         ///     From who is the email sent.
         ///     It has a default value <see cref="string.Empty"/>.
@@ -21,7 +26,7 @@
         /// </summary>
         public string SmtpUsername { get; set; } = string.Empty;
         /// <summary>
-        ///     Stp server password.
+        ///     Smtp server password.
         ///     It has a default value <see cref="string.Empty"/>.
         /// </summary>
         public string SmtpPassword { get; set; } = string.Empty;
@@ -40,5 +45,21 @@
         ///     It has a default value <see langword="false"/>.
         /// </summary>
         public bool IsBodyHtml { get; set; } = false;
+        /// <summary>
+        ///     Stmp server host.
+        ///     It has a default value <see cref="string.Empty"/>.
+        /// </summary>
+        public string Host { get; set; } = string.Empty;
+        /// <summary>
+        ///     Email Subject.
+        ///     It has a default value <see cref="string.Empty"/>.
+        /// </summary>
+        public string Subject { get; set; } = string.Empty;
+        /// <summary>
+        ///     Email body.
+        ///     It has a default value <see cref="string.Empty"/>.
+        /// </summary>
+        public string Body { get; set; } = string.Empty;
+        #endregion
     }
 }

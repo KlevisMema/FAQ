@@ -8,6 +8,10 @@
     public class AuthenticationSettings
     {
         /// <summary>
+        ///     The name of the section 
+        /// </summary>
+        public const string SectionName = "Jwt";
+        /// <summary>
         ///      Audience prop which value is stored in appsettings.json, default value empty string ""
         /// </summary>
         public string Audience { get; set; } = string.Empty;

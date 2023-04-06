@@ -62,9 +62,26 @@ namespace FAQ.HELPERS.Helpers.Email
                 MailMessage message = new()
                 {
                     From = new MailAddress(_emailSettigs.Value.From),
-                    Subject = "Email cofirmation",
+                    Subject = _emailSettigs.Value.Subject,
                     IsBodyHtml = _emailSettigs.Value.IsBodyHtml,
-                    Body = $"Your one time password is : {otp}"
+                    Body = $"""
+                                <div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+                                  <div style="margin:50px auto;width:70%;padding:20px 0">
+                                    <div style="border-bottom:1px solid #eee">
+                                      <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">FAQ-Q</a>
+                                    </div>
+                                    <p style="font-size:1.1em">Hi,</p>
+                                    <p>{_emailSettigs.Value.Body.Replace("{OTP}", otp)}</p>
+                                    <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">324457</h2>
+                                    <p style="font-size:0.9em;">Regards,<br />FAQ-Q</p>
+                                    <hr style="border:none;border-top:1px solid #eee" />
+                                    <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
+                                      <p>FAQ-Q</p>
+                                      <p>Albania</p>
+                                    </div>
+                                  </div>
+                                </div>
+                            """
                 };
 
                 message.To.Add(new MailAddress(userConfirmEmail.Email));
@@ -72,7 +89,7 @@ namespace FAQ.HELPERS.Helpers.Email
                 SmtpClient smtpClient = new()
                 {
                     Port = _emailSettigs.Value.Port,
-                    Host = "smtp.gmail.com",
+                    Host = _emailSettigs.Value.Host,
                     EnableSsl = _emailSettigs.Value.UseSSL,
                     UseDefaultCredentials = false,
                     Credentials = new NetworkCredential(_emailSettigs.Value.SmtpUsername, _emailSettigs.Value.SmtpPassword),

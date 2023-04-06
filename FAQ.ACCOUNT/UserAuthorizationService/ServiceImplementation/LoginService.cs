@@ -7,6 +7,8 @@ using FAQ.LOGGER.ServiceInterface;
 using Microsoft.AspNetCore.Identity;
 using FAQ.ACCOUNT.AuthorizationService.Interfaces;
 using FAQ.ACCOUNT.AuthenticationService.ServiceInterface;
+using FAQ.SHARED.ServicesMessageResponse;
+using Microsoft.Extensions.Options;
 #endregion
 
 namespace FAQ.ACCOUNT.AuthorizationService.Implementation
@@ -33,6 +35,14 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
         ///     Log service
         /// </summary>
         private readonly ILogService _log;
+        /// <summary>
+        ///     Message response register 
+        /// </summary>
+        private LogInMessageResponse _logInMessageResponse { get; set; } = new();
+        /// <summary>
+        ///     Exception message response
+        /// </summary>
+        private string ExceptionMessageResponse { get; set; }
 
         /// <summary>
         ///     Inject all services in constructor
@@ -41,18 +51,22 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
         /// <param name="userManager"> User Manager service </param>
         /// <param name="signInManager"> Sign In service </param>
         /// <param name="log"> Logger service </param>
+        /// <param name="messageResponses"> Message response </param>
         public LoginService
         (
             ILogService log,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            IOAuthJwtTokenService oAuthService
+            IOAuthJwtTokenService oAuthService,
+            IOptions<ServiceMessageResponseContainer> messageResponses
         )
         {
             _log = log;
             _userManager = userManager;
             _oAuthService = oAuthService;
             _signInManager = signInManager;
+            _logInMessageResponse = messageResponses.Value.LogInMessageResponse!;
+            ExceptionMessageResponse = messageResponses.Value.Exception;
         }
         #endregion
 
@@ -73,12 +87,12 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
                 var user = await _userManager.FindByEmailAsync(logIn.Email);
 
                 if (user is null)
-                    return CommonResponse<DtoLogin>.Response("User doesn't exists !!", false, System.Net.HttpStatusCode.NotFound, logIn);
+                    return CommonResponse<DtoLogin>.Response(_logInMessageResponse.UserNotFound, false, System.Net.HttpStatusCode.NotFound, logIn);
 
                 var emailConfirmed = await _userManager.IsEmailConfirmedAsync(user!);
 
                 if (!emailConfirmed)
-                    return CommonResponse<DtoLogin>.Response("You haven't confirmed you email yet!", false, System.Net.HttpStatusCode.NotFound, logIn);
+                    return CommonResponse<DtoLogin>.Response(_logInMessageResponse.UnconfirmedEmail, false, System.Net.HttpStatusCode.NotFound, logIn);
 
                 var result = await _signInManager.PasswordSignInAsync(logIn.Email, logIn.Password, false, false);
 
@@ -87,7 +101,7 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
                     var roles = await _userManager.GetRolesAsync(user);
 
                     if (roles.Count == 0)
-                        return CommonResponse<DtoLogin>.Response("User doesn't have any role !!", false, System.Net.HttpStatusCode.NotFound, logIn);
+                        return CommonResponse<DtoLogin>.Response(_logInMessageResponse.UserNoRoles, false, System.Net.HttpStatusCode.NotFound, logIn);
 
                     var userTransformedObj = new DtoUser()
                     {
@@ -99,13 +113,13 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
                     return CommonResponse<DtoLogin>.Response($"{_oAuthService.CreateToken(userTransformedObj)}", true, System.Net.HttpStatusCode.OK, logIn);
                 }
 
-                return CommonResponse<DtoLogin>.Response("Invalid credentials", false, System.Net.HttpStatusCode.BadRequest, logIn);
+                return CommonResponse<DtoLogin>.Response(_logInMessageResponse.InvalidCredentials, false, System.Net.HttpStatusCode.BadRequest, logIn);
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "Log In", null);
 
-                return CommonResponse<DtoLogin>.Response("Iternal server error", false, System.Net.HttpStatusCode.InternalServerError, new DtoLogin());
+                return CommonResponse<DtoLogin>.Response(ExceptionMessageResponse, false, System.Net.HttpStatusCode.InternalServerError, new DtoLogin());
             }
         }
 

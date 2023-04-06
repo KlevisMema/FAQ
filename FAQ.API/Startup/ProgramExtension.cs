@@ -26,6 +26,8 @@ using AspNetCoreRateLimit;
 using FAQ.SECURITY.ApplicationAuthorizationService.ServiceImplementation;
 using FAQ.SECURITY.ApplicationAuthorizationService.ServiceInterface;
 using Microsoft.Extensions.DependencyInjection;
+using FAQ.SHARED.ServicesMessageResponse;
+using Microsoft.Extensions.Options;
 #endregion
 
 namespace FAQ.API.Startup
@@ -64,9 +66,11 @@ namespace FAQ.API.Startup
             #endregion
 
             #region Settigs services
-            Services.Configure<AuthenticationSettings>(Configuration.GetSection("Jwt"));
-            Services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
-            var jwtSetting = Configuration.GetSection("Jwt");
+            Services.Configure<AuthenticationSettings>(Configuration.GetSection(AuthenticationSettings.SectionName));
+            Services.Configure<EmailSettings>(Configuration.GetSection(EmailSettings.SectionName));
+            Services.Configure<ServiceMessageResponseContainer>(Configuration.GetSection(ServiceMessageResponseContainer.SectionName));
+            var jwtSetting = Configuration.GetSection(AuthenticationSettings.SectionName);
+
             #endregion
 
             #region Database and Identity services

@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using FAQ.EMAIL.EmailService.ServiceInterface;
 using FAQ.ACCOUNT.AuthorizationService.Interfaces;
+using Microsoft.Extensions.Options;
+using FAQ.SHARED.ServicesMessageResponse;
 #endregion
 
 namespace FAQ.ACCOUNT.AuthorizationService.Implementation
@@ -41,6 +43,14 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
         ///     Email sender service 
         /// </summary>
         private readonly IEmailSender _emailSender;
+        /// <summary>
+        ///     Message response register 
+        /// </summary>
+        private RegisterMessageResponse registerMessageResponse { get; set; } = new();
+        /// <summary>
+        ///     Exception message response
+        /// </summary>
+        private string ExceptionMessageResponse { get; set; }
 
         /// <summary>
         ///     Inject all services in constructor
@@ -50,13 +60,15 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
         /// <param name="log"> Log service </param>
         /// <param name="db"> Database context </param>
         /// <param name="emailSender"> Email sender </param>
+        /// <param name="messageResponses"> Message response </param>
         public RegisterService
         (
             IMapper mapper,
             ILogService log,
             ApplicationDbContext db,
             IEmailSender emailSender,
-            UserManager<User> userManager
+            UserManager<User> userManager,
+            IOptions<ServiceMessageResponseContainer> messageResponses
         )
         {
             _db = db;
@@ -64,6 +76,8 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
             _mapper = mapper;
             _emailSender = emailSender;
             _userManager = userManager;
+            registerMessageResponse = messageResponses.Value.RegisterMessageResponse!;
+            ExceptionMessageResponse = messageResponses.Value.Exception;
         }
 
         #endregion
@@ -102,18 +116,25 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
                     await _emailSender.SendConfirmEmail(new DtoUserConfirmEmail { Email = register.Email, UserId = Guid.Parse(user.Id) }, otp);
 
                     if (registeredUser is not null)
-                        await _log.CreateLogAction($"[Succsess] - A user just registered at {DateTime.Now} with the email {registeredUser.Email}", "Register", Guid.Parse(registeredUser.Id));
+                        await _log.CreateLogAction
+                        (
+                            registerMessageResponse.SaveSuccsessRegistrationLog
+                                .Replace("{DateTime.Now}", DateTime.Now.ToString())
+                                .Replace("{registeredUser.Email}",registeredUser!.Email),
+                            "Register",
+                            Guid.Parse(registeredUser.Id)
+                        );
 
-                    return CommonResponse<DtoRegister>.Response($"Register succsessful", true, System.Net.HttpStatusCode.OK, register);
+                    return CommonResponse<DtoRegister>.Response(registerMessageResponse.SuccsessRegistration, true, System.Net.HttpStatusCode.OK, register);
                 }
 
-                return IdentityResponse<DtoRegister>.Response($"User registration attempt failed", false, System.Net.HttpStatusCode.BadRequest, register, result.Errors);
+                return IdentityResponse<DtoRegister>.Response(registerMessageResponse.FailRegistration, false, System.Net.HttpStatusCode.BadRequest, register, result.Errors);
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "Register", null);
 
-                return CommonResponse<DtoRegister>.Response("Internal server error", false, System.Net.HttpStatusCode.InternalServerError, register);
+                return CommonResponse<DtoRegister>.Response(ExceptionMessageResponse, false, System.Net.HttpStatusCode.InternalServerError, register);
             }
         }
 
