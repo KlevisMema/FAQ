@@ -13,17 +13,17 @@
         /// </summary>
         public const string SectionName = "ServiceMessageResponse";
         /// <summary>
-        ///     Child secyion <see cref="RegisterMessageResponse"/> that will
+        ///     Child section <see cref="RegisterMessageResponse"/> that will
         ///     hold all the values of it's own section.
         /// </summary>
         public RegisterMessageResponse? RegisterMessageResponse { get; set; }
         /// <summary>
-        ///     Child secyion <see cref="LogInMessageResponse"/> that will
+        ///     Child section <see cref="LogInMessageResponse"/> that will
         ///     hold all the values of it's own section.
         /// </summary>
         public LogInMessageResponse? LogInMessageResponse { get; set; }
         /// <summary>
-        ///     Child secyion <see cref="AccountMessageResponse"/> that will
+        ///     Child section <see cref="AccountMessageResponse"/> that will
         ///     hold all the values of it's own section.
         /// </summary>
         public AccountMessageResponse? AccountMessageResponse { get; set; }
@@ -32,6 +32,11 @@
         ///     Default value <see cref="string.Empty"/>
         /// </summary>
         public string Exception { get; set; } = string.Empty;
+        /// <summary>
+        ///     Child section <see cref="UploadProfilePictureMessageResponse"/> that will
+        ///     hold all the values of it's own section.
+        /// </summary>
+        public UploadProfilePictureMessageResponse? UploadProfilePictureMessageResponse { get; set; }
         #endregion
     }
 }

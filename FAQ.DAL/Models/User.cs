@@ -69,6 +69,11 @@ namespace FAQ.DAL.Models
         /// </summary>
         public string OTP { get; set; } = string.Empty;
         /// <summary>
+        ///     A <see cref="string"/> prop which default value is empty string, <see cref="string.Empty"/>.
+        ///     Will hold the ProfilePicture of this user.
+        /// </summary>
+        public string ProfilePicture { get;set; } = string.Empty;
+        /// <summary>
         ///     A property used for inhertiance purposes with <see cref="Question"/> model and lazy loading.
         ///     Will hold the Questions of this user.
         ///     This property is nullable.

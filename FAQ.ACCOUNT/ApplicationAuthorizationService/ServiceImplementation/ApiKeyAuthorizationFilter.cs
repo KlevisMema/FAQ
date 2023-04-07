@@ -1,5 +1,6 @@
 ﻿#region Usings
 using FAQ.SECURITY.ApplicationAuthorizationService.ServiceInterface;
+using FAQ.SHARED.ResponseTypes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 #endregion

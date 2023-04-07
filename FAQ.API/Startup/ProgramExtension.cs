@@ -28,6 +28,7 @@ using FAQ.SECURITY.ApplicationAuthorizationService.ServiceInterface;
 using Microsoft.Extensions.DependencyInjection;
 using FAQ.SHARED.ServicesMessageResponse;
 using Microsoft.Extensions.Options;
+using FAQ.SECURITY.UserAccountService.Settings;
 #endregion
 
 namespace FAQ.API.Startup
@@ -45,7 +46,11 @@ namespace FAQ.API.Startup
         /// <param name="Services"> Services collection </param>
         /// <param name="Configuration"> Configuration collection </param>
         /// <returns> Registered Services </returns>
-        public static IServiceCollection InjectServices(this IServiceCollection Services, IConfiguration Configuration)
+        public static IServiceCollection InjectServices
+        (
+            this IServiceCollection Services,
+            IConfiguration Configuration
+        )
         {
             #region Default services
             Services.AddControllers();
@@ -69,6 +74,7 @@ namespace FAQ.API.Startup
             Services.Configure<AuthenticationSettings>(Configuration.GetSection(AuthenticationSettings.SectionName));
             Services.Configure<EmailSettings>(Configuration.GetSection(EmailSettings.SectionName));
             Services.Configure<ServiceMessageResponseContainer>(Configuration.GetSection(ServiceMessageResponseContainer.SectionName));
+            Services.Configure<ProfilePictureImagePath>(Configuration.GetSection(ProfilePictureImagePath.SectionName));
             var jwtSetting = Configuration.GetSection(AuthenticationSettings.SectionName);
 
             #endregion

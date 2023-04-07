@@ -70,9 +70,7 @@ namespace FAQ.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var resultRegister = await _registerService.Register(register);
-
-            return StatusCodeResponse<DtoRegister>.ControllerResponse(resultRegister);
+            return StatusCodeResponse<DtoRegister>.ControllerResponse(await _registerService.Register(register));
         }
 
         #endregion
@@ -103,9 +101,7 @@ namespace FAQ.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var resultLogin = await _loginService.Login(logIn);
-
-            return StatusCodeResponse<DtoLogin>.ControllerResponse(resultLogin);
+            return StatusCodeResponse<DtoLogin>.ControllerResponse(await _loginService.Login(logIn));
         }
 
         #endregion

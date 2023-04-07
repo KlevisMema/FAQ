@@ -19,7 +19,11 @@ namespace FAQ.API.Startup
         /// <param name="app"> Web app </param>
         /// <param name="Configuration"> A collection of configurations </param>
         /// <returns> Nothing </returns>
-        public static async Task Extension(this WebApplication app, IConfiguration Configuration)
+        public static async Task Extension
+        (
+            this WebApplication app, 
+            IConfiguration Configuration
+        )
         {
             // Seed roles 
             await RolesSeeder.SeedRolesAsync(app, Configuration);

@@ -34,4 +34,8 @@
     <ProjectReference Include="..\FAQ.HELPERS\FAQ.EMAIL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Images\UserProfilePicture\" />
+  </ItemGroup>
+
 </Project>
