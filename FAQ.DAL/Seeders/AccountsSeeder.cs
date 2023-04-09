@@ -1,4 +1,5 @@
 ﻿#region Usings
+using FAQ.DAL.DataBase;
 using FAQ.DAL.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -25,33 +26,40 @@ namespace FAQ.DAL.Seeders
         {
             using var serviceScope = applicationBuilder.ApplicationServices.CreateScope();
 
-            var getUsers = configuration.GetSection(AccountSettings.SectionName).Get<AccountSettings[]>();
+            var _context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
 
-            var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<User>>();
-
-            foreach (var item in getUsers!)
+            if (_context is not null)
             {
-                var User = await userManager.FindByEmailAsync(item.UserName);
+                _context.Database.EnsureCreated();
 
-                if (User == null)
+                var getUsers = configuration.GetSection(AccountSettings.SectionName).Get<AccountSettings[]>();
+
+                var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+                foreach (var item in getUsers!)
                 {
-                    var newUser = new User()
-                    {
-                        UserName = item.UserName,
-                        Email = item.UserName,
-                        EmailConfirmed = true,
-                        Gender = SHARED.Enums.Gender.Male,
-                        Name = item.UserName,
-                        Surname = item.SurnName,
-                        Adress = item.Adress,
-                        Age = item.Age
-                    };
+                    var User = await userManager.FindByEmailAsync(item.UserName);
 
-                    await userManager.CreateAsync(newUser, item.Password);
-
-                    foreach (var role in item.Roles)
+                    if (User == null)
                     {
-                        await userManager.AddToRoleAsync(newUser, role);
+                        var newUser = new User()
+                        {
+                            UserName = item.UserName,
+                            Email = item.UserName,
+                            EmailConfirmed = true,
+                            Gender = SHARED.Enums.Gender.Male,
+                            Name = item.UserName,
+                            Surname = item.SurnName,
+                            Adress = item.Adress,
+                            Age = item.Age
+                        };
+
+                        await userManager.CreateAsync(newUser, item.Password);
+
+                        foreach (var role in item.Roles)
+                        {
+                            await userManager.AddToRoleAsync(newUser, role);
+                        }
                     }
                 }
             }
