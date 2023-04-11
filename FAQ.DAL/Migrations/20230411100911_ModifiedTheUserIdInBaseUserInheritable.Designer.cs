@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FAQ.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230403181332_AddedOTPForUserModel")]
-    partial class AddedOTPForUserModel
+    [Migration("20230411100911_ModifiedTheUserIdInBaseUserInheritable")]
+    partial class ModifiedTheUserIdInBaseUserInheritable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,10 +51,11 @@ namespace FAQ.DAL.Migrations
                     b.Property<Guid?>("ParentAnswerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("QuestionId")
+                    b.Property<Guid?>("QuestionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -138,6 +139,7 @@ namespace FAQ.DAL.Migrations
                         .HasColumnName("Question");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -226,7 +228,6 @@ namespace FAQ.DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("Gender")
-                        .HasMaxLength(50)
                         .HasColumnType("int");
 
                     b.Property<bool>("IsAdmin")
@@ -268,6 +269,10 @@ namespace FAQ.DAL.Migrations
                         .IsRequired()
                         .HasMaxLength(4)
                         .HasColumnType("nvarchar(4)");
+
+                    b.Property<string>("ProfilePicture")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -438,13 +443,13 @@ namespace FAQ.DAL.Migrations
 
                     b.HasOne("FAQ.DAL.Models.Question", "Question")
                         .WithMany("Answers")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("QuestionId");
 
                     b.HasOne("FAQ.DAL.Models.User", "User")
                         .WithMany("Answers")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ParentAnswer");
 
@@ -468,7 +473,9 @@ namespace FAQ.DAL.Migrations
                 {
                     b.HasOne("FAQ.DAL.Models.User", "User")
                         .WithMany("Questions")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

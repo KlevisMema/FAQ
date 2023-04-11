@@ -1,5 +1,6 @@
 ﻿#region Usings
 using System.Net;
+using Azure;
 using FAQ.SHARED.ResponseTypes;
 using Microsoft.AspNetCore.Mvc;
 #endregion
@@ -21,6 +22,20 @@ namespace FAQ.API.ControllerResponse
         /// <param name="obj"> A <see cref="CommonResponse{T}"/> object </param>
         /// <returns> <see cref="ObjectResult"/> </returns>
         public static ObjectResult ControllerResponse(CommonResponse<T> obj)
+        {
+            return obj.StatusCode switch
+            {
+                HttpStatusCode.NotFound => new NotFoundObjectResult(obj),
+                HttpStatusCode.BadRequest => new BadRequestObjectResult(obj),
+                HttpStatusCode.OK => new OkObjectResult(obj),
+                HttpStatusCode.Forbidden => new BadRequestObjectResult(obj),
+                _ => new ObjectResult(obj) { StatusCode = StatusCodes.Status500InternalServerError },
+            };
+        }
+
+        /// <param name="obj">List of object that will come from a controller</param>
+        /// <returns>The appropriate status code</returns>
+        public static ObjectResult ControllerResponseList(CommonResponse<List<T>> obj)
         {
             return obj.StatusCode switch
             {

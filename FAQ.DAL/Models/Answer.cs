@@ -48,7 +48,7 @@ namespace FAQ.DAL.Models
         /// <summary>
         ///     A <see cref="Guid"/> property which will hold the id of the question.
         /// </summary>
-        public Guid QuestionId { get; set; }
+        public Guid? QuestionId { get; set; }
         /// <summary>
         ///     A navigation property of <see cref="Question"/>.
         ///     Its nullable.

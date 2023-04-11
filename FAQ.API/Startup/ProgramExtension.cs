@@ -29,6 +29,8 @@ using Microsoft.Extensions.DependencyInjection;
 using FAQ.SHARED.ServicesMessageResponse;
 using Microsoft.Extensions.Options;
 using FAQ.SECURITY.UserAccountService.Settings;
+using FAQ.BLL.RepositoryService.Interfaces;
+using FAQ.BLL.RepositoryService.Implementation;
 #endregion
 
 namespace FAQ.API.Startup
@@ -202,15 +204,17 @@ namespace FAQ.API.Startup
 
             #region Automapper services
             Services.AddAutoMapper(typeof(UserMappings));
+            Services.AddAutoMapper(typeof(QuestionMappings));
             #endregion
 
             #region BLL, ACCOUNT, LOG and StatusCodeResponse Services registration.
-            Services.AddTransient<ILogService, LogService>();
-            Services.AddTransient<IEmailSender, EmailSender>();
-            Services.AddTransient<ILoginService, LoginService>();
-            Services.AddTransient<IAccountService, AccountService>();
-            Services.AddTransient<IRegisterService, RegisterService>();
-            Services.AddTransient<IOAuthJwtTokenService, OAuthJwtTokenService>();
+            Services.AddScoped<ILogService, LogService>();
+            Services.AddScoped<IEmailSender, EmailSender>();
+            Services.AddScoped<ILoginService, LoginService>();
+            Services.AddScoped<IAccountService, AccountService>();
+            Services.AddScoped<IQuestionService, QuestionService>();
+            Services.AddScoped<IRegisterService, RegisterService>();
+            Services.AddScoped<IOAuthJwtTokenService, OAuthJwtTokenService>();
             #endregion
 
             #region Api Rate Limit
