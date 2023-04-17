@@ -13,6 +13,10 @@ namespace FAQ.DTO.Mappings
     /// </summary>
     public class UserMappings : Profile
     {
+        /// <summary>
+        ///     Instasiate a new insance of <see cref="UserMappings"/>
+        ///     and configure mappings.
+        /// </summary>
         public UserMappings()
         {
             #region Mappings

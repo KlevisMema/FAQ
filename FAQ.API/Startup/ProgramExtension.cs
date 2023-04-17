@@ -203,8 +203,10 @@ namespace FAQ.API.Startup
             #endregion
 
             #region Automapper services
+            Services.AddAutoMapper(typeof(TagMappings));
             Services.AddAutoMapper(typeof(UserMappings));
             Services.AddAutoMapper(typeof(QuestionMappings));
+            Services.AddAutoMapper(typeof(QuestionTagMappings));
             #endregion
 
             #region BLL, ACCOUNT, LOG and StatusCodeResponse Services registration.
@@ -214,6 +216,7 @@ namespace FAQ.API.Startup
             Services.AddScoped<IAccountService, AccountService>();
             Services.AddScoped<IQuestionService, QuestionService>();
             Services.AddScoped<IRegisterService, RegisterService>();
+            Services.AddScoped<IQuestionTagService, QuestionTagService>();
             Services.AddScoped<IOAuthJwtTokenService, OAuthJwtTokenService>();
             #endregion
 

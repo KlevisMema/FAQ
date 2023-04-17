@@ -21,7 +21,7 @@ namespace FAQ.API.Startup
         /// <returns> Nothing </returns>
         public static async Task Extension
         (
-            this WebApplication app, 
+            this WebApplication app,
             IConfiguration Configuration
         )
         {
@@ -29,6 +29,10 @@ namespace FAQ.API.Startup
             await RolesSeeder.SeedRolesAsync(app, Configuration);
             // seed users
             await AccountsSeeder.SeedUsersAsync(app, Configuration);
+            // seed tags
+            await TagsSeeders.SeedTagsAsync(app);
+            // seed log types
+            await LogTypesSeeder.SeedLogTypesAsync(app);
             // A RateLimitMiddleWare 
             app.UseIpRateLimiting();
             // CORS MiddleWare

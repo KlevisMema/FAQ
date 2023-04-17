@@ -18,11 +18,16 @@ namespace FAQ.DTO.Mappings
 
 
             CreateMap<DtoCreateQuestion, Question>()
+               .ForMember(dest => dest.Tittle, opt => opt.MapFrom(src => src.Tittle))
                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.Now))
                .ForMember(dest => dest.P_Question, opt => opt.MapFrom(src => src.P_Question));
 
+            CreateMap<Question, DtoCreateQuestionReturn>()
+                .ForMember(dest => dest.QuestionId, opt => opt.MapFrom(src => src.Id));
+
 
             CreateMap<DtoUpdateQuestion, Question>()
+               .ForMember(dest => dest.Tittle, opt => opt.MapFrom(src => src.Tittle))
                .ForMember(dest => dest.EditedAt, opt => opt.MapFrom(src => DateTime.Now))
                .ForMember(dest => dest.P_Question, opt => opt.MapFrom(src => src.P_Question));
 

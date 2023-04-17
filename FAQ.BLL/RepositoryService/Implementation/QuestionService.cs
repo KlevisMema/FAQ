@@ -1,4 +1,5 @@
-﻿#region Usings
+﻿
+#region Usings
 using AutoMapper;
 using FAQ.DAL.Models;
 using FAQ.DAL.DataBase;
@@ -129,7 +130,7 @@ namespace FAQ.BLL.RepositoryService.Implementation
             }
         }
 
-        public async Task<CommonResponse<DtoCreateQuestion>> CreateQuestion
+        public async Task<CommonResponse<DtoCreateQuestionReturn>> CreateQuestion
         (
             Guid userId,
             DtoCreateQuestion newQuestion
@@ -138,7 +139,7 @@ namespace FAQ.BLL.RepositoryService.Implementation
             try
             {
                 if (newQuestion is null)
-                    return CommonResponse<DtoCreateQuestion>.Response("Question is empty!!", false, System.Net.HttpStatusCode.BadRequest, newQuestion);
+                    return CommonResponse<DtoCreateQuestionReturn>.Response("Question is empty!!", false, System.Net.HttpStatusCode.BadRequest, null);
 
                 var question = _mapper.Map<Question>(newQuestion);
                 question.UserId = userId.ToString();
@@ -146,13 +147,17 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 _db.Questions.Add(question);
                 await _db.SaveChangesAsync();
 
-                return CommonResponse<DtoCreateQuestion>.Response("Question created succsessfully", true, System.Net.HttpStatusCode.OK, newQuestion);
+                var dtoQuestion = _mapper.Map<DtoCreateQuestionReturn>(question);
+
+                dtoQuestion.TagId = newQuestion.TagId;
+
+                return CommonResponse<DtoCreateQuestionReturn>.Response("Question created succsessfully", true, System.Net.HttpStatusCode.OK, dtoQuestion);
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "CreateQuestion", userId);
 
-                return CommonResponse<DtoCreateQuestion>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, newQuestion);
+                return CommonResponse<DtoCreateQuestionReturn>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
 

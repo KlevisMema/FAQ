@@ -22,7 +22,11 @@ namespace FAQ.DAL.Seeders
         /// <param name="applicationBuilder"> App Builder of type <see cref="IApplicationBuilder"/> </param>
         /// <param name="configuration"> Configuration of type <see cref="IConfiguration"/> </param>
         /// <returns> Nothing </returns>
-        public static async Task SeedUsersAsync(IApplicationBuilder applicationBuilder, IConfiguration configuration)
+        public static async Task SeedUsersAsync
+        (
+            IApplicationBuilder applicationBuilder, 
+            IConfiguration configuration
+        )
         {
             using var serviceScope = applicationBuilder.ApplicationServices.CreateScope();
 

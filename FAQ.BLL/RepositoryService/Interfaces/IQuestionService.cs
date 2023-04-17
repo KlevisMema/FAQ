@@ -5,7 +5,7 @@ namespace FAQ.BLL.RepositoryService.Interfaces
 {
     public interface IQuestionService
     {
-        Task<CommonResponse<DtoCreateQuestion>> CreateQuestion
+        Task<CommonResponse<DtoCreateQuestionReturn>> CreateQuestion
         (
             Guid userId,
             DtoCreateQuestion newQuestion

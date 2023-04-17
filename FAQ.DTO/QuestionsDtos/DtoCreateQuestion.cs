@@ -8,5 +8,9 @@ namespace FAQ.DTO.QuestionsDtos
     {
         [Required]
         public string P_Question { get; set; } = string.Empty;
+        [Required]
+        public string Tittle { get; set; } = string.Empty;
+        [Required]
+        public Guid TagId { get; set; }
     }
 }

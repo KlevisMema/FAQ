@@ -56,6 +56,13 @@ namespace FAQ.SHARED.ResponseTypes
             Value = value;
         }
 
+        /// <summary>
+        ///  A default constructor.
+        /// </summary>
+        public CommonResponse()
+        {
+        }
+
         #endregion
 
         #region Methods

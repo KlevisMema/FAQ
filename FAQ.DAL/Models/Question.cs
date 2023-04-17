@@ -22,6 +22,16 @@ namespace FAQ.DAL.Models
         [Key]
         public Guid Id { get; set; }
         /// <summary>
+        ///     A <see cref="string"/> property which has a empty string 
+        ///     as default value, <see cref="string.Empty"/>. It configured 
+        ///     to not be null by adding <see cref="RequiredAttribute"/>, and has a 
+        ///     lengs of max characters of 15 using <see cref="StringLengthAttribute"/>.
+        ///     This prop will hold the tittle of the question.
+        /// </summary>
+        [Required]
+        [StringLength(15)]
+        public string Tittle { get; set; } = string.Empty;
+        /// <summary>
         ///     A string property which has a empty string as default value, <see cref="string.Empty"/>.
         ///     This property is configured to be required/not null using <see cref="RequiredAttribute"/>, 
         ///     and the clumn name as "Question" using <see cref="ColumnAttribute"/>. Will hold the value of the question description.

@@ -135,6 +135,11 @@ namespace FAQ.DAL.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Question");
 
+                    b.Property<string>("Tittle")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");

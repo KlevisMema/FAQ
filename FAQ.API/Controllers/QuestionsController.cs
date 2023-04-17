@@ -21,13 +21,20 @@ namespace FAQ.API.Controllers
         /// <summary>
         /// 
         /// </summary>
+        private readonly IQuestionTagService _questionTagService;
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="questionService"></param>
+        /// <param name="questionTagService"></param>
         public QuestionsController
         (
-            IQuestionService questionService
+            IQuestionService questionService,
+            IQuestionTagService questionTagService
         )
         {
             _questionService = questionService;
+            _questionTagService = questionTagService;
         }
 
 
@@ -66,7 +73,22 @@ namespace FAQ.API.Controllers
             [FromForm] DtoCreateQuestion question
         )
         {
-            return StatusCodeResponse<DtoCreateQuestion>.ControllerResponse(await _questionService.CreateQuestion(userId, question));
+            var createQuestionResult = await _questionService.CreateQuestion(userId, question);
+
+            if (!createQuestionResult.Succsess && createQuestionResult.Value is null)
+            {
+                return StatusCodeResponse<DtoCreateQuestion>.ControllerResponse(new CommonResponse<DtoCreateQuestion>()
+                {
+                    StatusCode = createQuestionResult.StatusCode,
+                    Succsess = createQuestionResult.Succsess,
+                    Value = null,
+                    Message = createQuestionResult.Message
+                });
+            }
+
+            var createQuestionTagResult = await _questionTagService.CreateQuestionTag(userId, createQuestionResult.Value!);
+
+            return StatusCodeResponse<DtoCreateQuestion>.ControllerResponse(createQuestionTagResult);
         }
 
         [HttpPut("UpdateQuestion/{userId}")]
