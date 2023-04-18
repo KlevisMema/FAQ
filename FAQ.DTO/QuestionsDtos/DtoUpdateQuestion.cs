@@ -7,8 +7,8 @@ namespace FAQ.DTO.QuestionsDtos
         [Required]
         public Guid Id { get; set; }
         [Required]
-        public string P_Question { get; set; } = string.Empty;
-        [Required]
         public string Tittle { get; set; } = string.Empty;
+        [Required]
+        public string P_Question { get; set; } = string.Empty;
     }
 }

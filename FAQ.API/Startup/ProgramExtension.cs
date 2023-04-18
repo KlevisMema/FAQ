@@ -210,14 +210,14 @@ namespace FAQ.API.Startup
             #endregion
 
             #region BLL, ACCOUNT, LOG and StatusCodeResponse Services registration.
-            Services.AddScoped<ILogService, LogService>();
-            Services.AddScoped<IEmailSender, EmailSender>();
-            Services.AddScoped<ILoginService, LoginService>();
-            Services.AddScoped<IAccountService, AccountService>();
-            Services.AddScoped<IQuestionService, QuestionService>();
-            Services.AddScoped<IRegisterService, RegisterService>();
-            Services.AddScoped<IQuestionTagService, QuestionTagService>();
-            Services.AddScoped<IOAuthJwtTokenService, OAuthJwtTokenService>();
+            Services.AddTransient<ILogService, LogService>();
+            Services.AddTransient<IEmailSender, EmailSender>();
+            Services.AddTransient<ILoginService, LoginService>();
+            Services.AddTransient<IAccountService, AccountService>();
+            Services.AddTransient<IQuestionService, QuestionService>();
+            Services.AddTransient<IRegisterService, RegisterService>();
+            Services.AddTransient<IQuestionTagService, QuestionTagService>();
+            Services.AddTransient<IOAuthJwtTokenService, OAuthJwtTokenService>();
             #endregion
 
             #region Api Rate Limit

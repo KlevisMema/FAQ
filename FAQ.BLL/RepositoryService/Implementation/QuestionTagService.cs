@@ -84,14 +84,14 @@ namespace FAQ.BLL.RepositoryService.Implementation
 
 
                 _db.QuestionTags.Add(QuestionTag);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
 
                 var dtoCreateQuestionReturn = _mapper.Map<DtoCreateQuestion>(QuestionTag);
 
                 dtoCreateQuestionReturn.P_Question = dtoCreateQuestion.P_Question;
                 dtoCreateQuestionReturn.Tittle = dtoCreateQuestion.Tittle;
 
-                return CommonResponse<DtoCreateQuestion>.Response("", true, System.Net.HttpStatusCode.OK, dtoCreateQuestionReturn);
+                return CommonResponse<DtoCreateQuestion>.Response("Question created succsessfully", true, System.Net.HttpStatusCode.OK, dtoCreateQuestionReturn);
             }
             catch (Exception ex)
             {

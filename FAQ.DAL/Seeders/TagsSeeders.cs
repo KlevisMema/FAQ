@@ -33,12 +33,15 @@ namespace FAQ.DAL.Seeders
 
             if (_context is not null)
             {
-                await _context.Tags.AddRangeAsync(new List<Tag>()
+                if (!_context.Tags.Any())
                 {
-                    new Tag{Id=Guid.NewGuid(), CreatedAt= DateTime.Now, IsDeleted = false, Name="Cars"},
-                });
+                    await _context.Tags.AddRangeAsync(new List<Tag>()
+                    {
+                        new Tag{Id=Guid.NewGuid(), CreatedAt= DateTime.Now, IsDeleted = false, Name="Cars"},
+                    });
 
-                await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
+                }
             }
 
             #endregion

@@ -2,6 +2,7 @@
 using FAQ.DAL.Models;
 using FAQ.DAL.DataBase;
 using FAQ.LOGGER.ServiceInterface;
+using Microsoft.EntityFrameworkCore;
 #endregion
 
 namespace FAQ.LOGGER.ServiceImplementation
@@ -50,12 +51,14 @@ namespace FAQ.LOGGER.ServiceImplementation
         {
             try
             {
+                LogType? logType = await _db.LogTypes.FirstOrDefaultAsync(x => x.Name!.Equals("Exception"));
+
                 Log log = new()
                 {
                     MethodName = methodName,
                     Description = ex.ToString(),
                     UserId = UserId,
-                    LogTypeId = 1
+                    LogTypeId = logType!.Id
                 };
 
                 _db.Logs.Add(log);
@@ -84,12 +87,14 @@ namespace FAQ.LOGGER.ServiceImplementation
         {
             try
             {
+                LogType? logType = await _db.LogTypes.FirstOrDefaultAsync(x => x.Name!.Equals("User Action"));
+
                 Log log = new()
                 {
                     MethodName = methodName,
                     Description = description,
                     UserId = userId,
-                    LogTypeId = 2
+                    LogTypeId = logType!.Id
                 };
 
 

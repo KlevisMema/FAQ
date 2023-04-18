@@ -3,6 +3,7 @@ using FAQ.DAL.DataBase;
 using FAQ.DAL.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 #endregion
@@ -33,13 +34,17 @@ namespace FAQ.DAL.Seeders
 
             if (_context is not null)
             {
-                await _context.LogTypes.AddRangeAsync(new List<LogType>()
+                if (!_context.LogTypes.Any())
                 {
-                    new LogType{Id=1, Name="Exception"},
-                    new LogType{Id=2, Name="User Action"},
-                });
+                    await _context.LogTypes.AddRangeAsync(new List<LogType>()
+                    {
+                        new LogType{Name="Exception"},
+                        new LogType{Name="User Action"},
+                    });
 
-                await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
+                }
+
             }
 
         }

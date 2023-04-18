@@ -66,6 +66,45 @@ namespace FAQ.API.Controllers
             return StatusCodeResponse<DtoGetQuestion>.ControllerResponse(await _questionService.GetQuestion(userId, questionId));
         }
 
+        [HttpGet("GetAllDisabledQuesions/{userId}")]
+        public async Task<ActionResult<CommonResponse<List<DtoDisabledQuestion>>>> GetAllDisabledQuesions
+       (
+           [FromRoute] Guid userId
+       )
+        {
+            return StatusCodeResponse<List<DtoDisabledQuestion>>.ControllerResponse(await _questionService.GetAllDisabledQuesions(userId));
+        }
+
+        [HttpGet("GetDisabledQuesion/{userId}/{questionId}")]
+        public async Task<ActionResult<CommonResponse<DtoDisabledQuestion>>> GetDisabledQuesion
+        (
+            [FromRoute] Guid userId,
+            [FromRoute] Guid questionId
+        )
+        {
+            return StatusCodeResponse<DtoDisabledQuestion>.ControllerResponse(await _questionService.GetDisabledQuesion(userId, questionId));
+        }
+
+        [HttpGet("GetQuestionWithAnswers/{userId}/{questionId}")]
+        public async Task<ActionResult<DtoQuestionAnswers>> GetQuestionWithAnswers
+       (
+           [FromRoute] Guid userId,
+           [FromRoute] Guid questionId
+       )
+        {
+            return StatusCodeResponse<DtoQuestionAnswers>.ControllerResponse(await _questionService.GetQuestionWithAnswersAndChildAnswers(userId, questionId));
+        }
+
+        [HttpGet("GetQuestionWithAnswersNoChildAnswers/{userId}/{questionId}")]
+        public async Task<ActionResult<DtoQuestionAnswers>> GetQuestionWithAnswersNoChildAnswers
+        (
+            [FromRoute] Guid userId,
+            [FromRoute] Guid questionId
+        )
+        {
+            return StatusCodeResponse<DtoQuestionAnswers>.ControllerResponse(await _questionService.GetQuestionWithAnswersNoChildAnswers(userId, questionId));
+        }
+
         [HttpPost("CreateQuestion/{userId}")]
         public async Task<ActionResult<CommonResponse<DtoCreateQuestion>>> CreateQuestion
         (
@@ -101,17 +140,7 @@ namespace FAQ.API.Controllers
             return StatusCodeResponse<DtoUpdateQuestion>.ControllerResponse(await _questionService.UpdateQuestion(userId, question));
         }
 
-        [HttpDelete("DeleteQuestion/{userId}/{questionId}")]
-        public async Task<ActionResult<CommonResponse<DtoDeletedQuestion>>> DeleteQuestion
-        (
-            [FromRoute] Guid userId,
-            [FromRoute] Guid questionId
-        )
-        {
-            return StatusCodeResponse<DtoDeletedQuestion>.ControllerResponse(await _questionService.DeleteQuestion(userId, questionId));
-        }
-
-        [HttpPost("DisableQuestion/{userId}/{questionId}")]
+        [HttpPut("DisableQuestion/{userId}/{questionId}")]
         public async Task<ActionResult<CommonResponse<DtoDisabledQuestion>>> DisableQuestion
         (
            [FromRoute] Guid userId,
@@ -122,25 +151,6 @@ namespace FAQ.API.Controllers
         }
 
 
-        [HttpGet("GetAllDisabledQuesions/{userId}")]
-        public async Task<ActionResult<CommonResponse<List<DtoDisabledQuestion>>>> GetAllDisabledQuesions
-        (
-            [FromRoute] Guid userId
-        )
-        {
-            return StatusCodeResponse<List<DtoDisabledQuestion>>.ControllerResponse(await _questionService.GetAllDisabledQuesions(userId));
-        }
-
-        [HttpGet("GetDisabledQuesion/{userId}/{questionId}")]
-        public async Task<ActionResult<CommonResponse<DtoDisabledQuestion>>> GetDisabledQuesion
-        (
-            [FromRoute] Guid userId,
-            [FromRoute] Guid questionId
-        )
-        {
-            return StatusCodeResponse<DtoDisabledQuestion>.ControllerResponse(await _questionService.GetDisabledQuesion(userId, questionId));
-        }
-
         [HttpPut("UnDisableQuestion/{userId}/{questionId}")]
         public async Task<ActionResult<CommonResponse<DtoDisabledQuestion>>> UnDisableQuestion
         (
@@ -150,5 +160,16 @@ namespace FAQ.API.Controllers
         {
             return StatusCodeResponse<DtoDisabledQuestion>.ControllerResponse(await _questionService.UnDisableQuestion(userId, questionId));
         }
+
+        [HttpDelete("DeleteQuestion/{userId}/{questionId}")]
+        public async Task<ActionResult<CommonResponse<DtoDeletedQuestion>>> DeleteQuestion
+        (
+          [FromRoute] Guid userId,
+          [FromRoute] Guid questionId
+        )
+        {
+            return StatusCodeResponse<DtoDeletedQuestion>.ControllerResponse(await _questionService.DeleteQuestion(userId, questionId));
+        }
+
     }
 }

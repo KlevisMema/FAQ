@@ -1,5 +1,4 @@
-﻿
-#region Usings
+﻿#region Usings
 using AutoMapper;
 using FAQ.DAL.Models;
 using FAQ.DAL.DataBase;
@@ -13,9 +12,12 @@ using FAQ.BLL.RepositoryService.Interfaces;
 
 namespace FAQ.BLL.RepositoryService.Implementation
 {
+    /// <summary>
+    ///     A Service class that proviced functionalities for
+    ///     questions by implementing the <see cref="IQuestionService"/> interface.
+    /// </summary>
     public class QuestionService : IQuestionService
     {
-
         #region Services Injection
         /// <summary>
         ///     The <see cref="ILogService"/>.
@@ -26,10 +28,6 @@ namespace FAQ.BLL.RepositoryService.Implementation
         /// </summary>
         private readonly ApplicationDbContext _db;
         /// <summary>
-        ///    The <see cref="UserManager{T}"/> where T is <see cref="User"/>.
-        /// </summary>
-        private readonly UserManager<User> _userManager;
-        /// <summary>
         ///    The <see cref="IMapper"/>.
         /// </summary>
         private readonly IMapper _mapper;
@@ -39,32 +37,41 @@ namespace FAQ.BLL.RepositoryService.Implementation
         /// </summary>
         /// <param name="log"> The <see cref="ILogService"/> </param>
         /// <param name="db"> The  <see cref="ApplicationDbContext"/> </param>
-        /// <param name="userManager"> The <see cref="UserManager{T}"/> where T is <see cref="User"/> </param>
+        /// <param name="mapper"> the <see cref="IMapper"/> </param>
         public QuestionService
         (
             IMapper mapper,
             ILogService log,
-            ApplicationDbContext db,
-            UserManager<User> userManager
+            ApplicationDbContext db
         )
         {
             _db = db;
             _log = log;
-            _userManager = userManager;
             _mapper = mapper;
         }
         #endregion
 
         #region Methods Implementation
 
+        /// <summary>
+        ///     Get all questions from questions table
+        ///     method implementation.
+        /// </summary>
+        /// <param name="userId"> The <see cref="Guid"/> user id. </param>
+        /// <returns> 
+        ///     <see cref="Task{TResult}"/> where TResult is <see cref="CommonResponse{T}"/> 
+        ///     where T is <see cref="List{T}"/> and T is <see cref="DtoGetQuestion"/>. 
+        /// </returns>
         public async Task<CommonResponse<List<DtoGetQuestion>>> GetAllQuestions
         (
-          Guid userId
+            Guid userId
         )
         {
             try
             {
-                var questions = await _db.Questions.Include(user => user.User)
+                var questions = await _db.Questions.Include(user => user.User!)
+                                                   .Include(x => x.QuestionTags!)
+                                                   .ThenInclude(x => x.Tag)
                                                    .Where(x => x.UserId.Equals(userId.ToString()))
                                                    .ToListAsync();
 
@@ -80,6 +87,15 @@ namespace FAQ.BLL.RepositoryService.Implementation
             }
         }
 
+        /// <summary>
+        ///     Get all questions from questions table
+        ///     method implementation that are not disabled.
+        /// </summary>
+        /// <param name="userId"> The <see cref="Guid"/> user id. </param>
+        /// <returns> 
+        ///     <see cref="Task{TResult}"/> where TResult is <see cref="CommonResponse{T}"/> 
+        ///     where T is <see cref="List{T}"/> and T is <see cref="DtoGetQuestion"/>. 
+        /// </returns>
         public async Task<CommonResponse<List<DtoGetQuestion>>> GetAllNonDisabledQuestions
         (
           Guid userId
@@ -88,6 +104,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
             try
             {
                 var notDisabledQuestions = await _db.Questions.Include(user => user.User)
+                                                   .Include(x => x.QuestionTags!)
+                                                   .ThenInclude(x => x.Tag)
                                                    .Where(x => x.UserId.Equals(userId.ToString()) && !x.IsDeleted)
                                                    .ToListAsync();
 
@@ -103,6 +121,15 @@ namespace FAQ.BLL.RepositoryService.Implementation
             }
         }
 
+        /// <summary>
+        ///     Get a question from questions table
+        ///     method implementation.
+        /// </summary>
+        /// <param name="userId"> The <see cref="Guid"/> user id </param>
+        /// <returns> 
+        ///     <see cref="Task{TResult}"/> where TResult is <see cref="CommonResponse{T}"/> 
+        ///     where T is <see cref="DtoGetQuestion"/>.
+        /// </returns>
         public async Task<CommonResponse<DtoGetQuestion>> GetQuestion
         (
             Guid userId,
@@ -112,6 +139,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
             try
             {
                 var question = await _db.Questions.Include(x => x.User)
+                                                  .Include(x => x.QuestionTags!)
+                                                  .ThenInclude(x => x.Tag)
                                                   .FirstOrDefaultAsync(q => q.Id.Equals(qestionId) && q.UserId.Equals(userId.ToString()));
 
                 if (question is null)
@@ -179,7 +208,6 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 newValuesOfQuestion.CreatedAt = questionToBeUpdated.CreatedAt;
 
                 _db.Entry(questionToBeUpdated).CurrentValues.SetValues(newValuesOfQuestion);
-
                 _db.Questions.Update(questionToBeUpdated);
                 await _db.SaveChangesAsync();
 
@@ -209,13 +237,20 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 if (questionToBeDisabled.IsDeleted)
                     return CommonResponse<DtoDisabledQuestion>.Response("This question is already disabled", false, System.Net.HttpStatusCode.BadRequest, null);
 
-                var dtoQuestion = _mapper.Map<DtoDisabledQuestion>(questionToBeDisabled);
 
                 questionToBeDisabled.DeletedAt = DateTime.UtcNow;
                 questionToBeDisabled.IsDeleted = true;
 
                 _db.Questions.Update(questionToBeDisabled);
                 await _db.SaveChangesAsync();
+
+                var question = await _db.Questions.Include(user => user.User)
+                                                  .Include(x => x.QuestionTags!)
+                                                  .ThenInclude(x => x.Tag)
+                                                  .Where(x => x.UserId.Equals(userId.ToString()) && x.IsDeleted && x.Id.Equals(questionId))
+                                                  .FirstOrDefaultAsync();
+
+                var dtoQuestion = _mapper.Map<DtoDisabledQuestion>(question);
 
                 return CommonResponse<DtoDisabledQuestion>.Response("Question disabled succsessfully", true, System.Net.HttpStatusCode.OK, dtoQuestion);
 
@@ -236,6 +271,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
             try
             {
                 var questions = await _db.Questions.Include(user => user.User)
+                                                   .Include(x => x.QuestionTags!)
+                                                   .ThenInclude(x => x.Tag)
                                                    .Where(x => x.UserId.Equals(userId.ToString()) && x.IsDeleted)
                                                    .ToListAsync();
 
@@ -260,8 +297,13 @@ namespace FAQ.BLL.RepositoryService.Implementation
             try
             {
                 var question = await _db.Questions.Include(user => user.User)
-                                                   .Where(x => x.UserId.Equals(userId.ToString()) && x.IsDeleted && x.Id.Equals(questionId))
-                                                   .FirstOrDefaultAsync();
+                                                  .Include(x => x.QuestionTags!)
+                                                  .ThenInclude(x => x.Tag)
+                                                  .Where(x => x.UserId.Equals(userId.ToString()) && x.IsDeleted && x.Id.Equals(questionId))
+                                                  .FirstOrDefaultAsync();
+
+                if (question is null)
+                    CommonResponse<DtoDisabledQuestion>.Response($"Question doesn't exists", false, System.Net.HttpStatusCode.NotFound, null);
 
                 var dtoQuestion = _mapper.Map<DtoDisabledQuestion>(question);
 
@@ -316,15 +358,24 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 if (questionToBeUnDisabled is null)
                     return CommonResponse<DtoDisabledQuestion>.Response("Question doesn't exists", false, System.Net.HttpStatusCode.NotFound, null);
 
+                if (!questionToBeUnDisabled.IsDeleted)
+                    return CommonResponse<DtoDisabledQuestion>.Response("This question is undisabled", false, System.Net.HttpStatusCode.BadRequest, null);
+
                 questionToBeUnDisabled.IsDeleted = false;
                 questionToBeUnDisabled.EditedAt = DateTime.Now;
 
                 _db.Questions.Update(questionToBeUnDisabled);
                 await _db.SaveChangesAsync();
 
-                var dtoQuestion = _mapper.Map<DtoDisabledQuestion>(questionToBeUnDisabled);
+                var question = await _db.Questions.Include(user => user.User)
+                                                  .Include(x => x.QuestionTags!)
+                                                  .ThenInclude(x => x.Tag)
+                                                  .Where(x => x.UserId.Equals(userId.ToString()) && x.Id.Equals(questionId))
+                                                  .FirstOrDefaultAsync();
 
-                return CommonResponse<DtoDisabledQuestion>.Response("Question un disabled succsessfully", true, System.Net.HttpStatusCode.OK, dtoQuestion);
+                var dtoQuestion = _mapper.Map<DtoDisabledQuestion>(question);
+
+                return CommonResponse<DtoDisabledQuestion>.Response("Question undisabled succsessfully", true, System.Net.HttpStatusCode.OK, dtoQuestion);
             }
             catch (Exception ex)
             {
@@ -334,7 +385,66 @@ namespace FAQ.BLL.RepositoryService.Implementation
             }
         }
 
+        public async Task<CommonResponse<DtoQuestionAnswers>> GetQuestionWithAnswersAndChildAnswers
+        (
+            Guid userId,
+            Guid questionId
+        )
+        {
+            try
+            {
+                var question = await _db.Questions.Include(user => user.User)
+                                                  .Include(x => x.Answers!)
+                                                  .ThenInclude(x => x.ChildAnswers)
+                                                  .Include(x => x.QuestionTags!)
+                                                  .ThenInclude(x => x.Tag)
+                                                  .Where(x => x.UserId.Equals(userId.ToString()) && x.Id.Equals(questionId))
+                                                  .FirstOrDefaultAsync();
 
+                if (question is null)
+                    return CommonResponse<DtoQuestionAnswers>.Response("Question doesn't exists", false, System.Net.HttpStatusCode.NotFound, null);
+
+                var dtoQuestionAnswers = _mapper.Map<DtoQuestionAnswers>(question);
+
+                return CommonResponse<DtoQuestionAnswers>.Response($"Question retrieved succsessfully with answers ", true, System.Net.HttpStatusCode.OK, dtoQuestionAnswers);
+            }
+            catch (Exception ex)
+            {
+                await _log.CreateLogException(ex, "GetQuestionWithAnswersAndChildAnswers", userId);
+
+                return CommonResponse<DtoQuestionAnswers>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
+            }
+        }
+
+        public async Task<CommonResponse<DtoQuestionAnswers>> GetQuestionWithAnswersNoChildAnswers
+        (
+             Guid userId,
+            Guid questionId
+        )
+        {
+            try
+            {
+                var question = await _db.Questions.Include(user => user.User)
+                                                  .Include(x => x.Answers!)
+                                                  .Include(x => x.QuestionTags!)
+                                                  .ThenInclude(x => x.Tag)
+                                                  .Where(x => x.UserId.Equals(userId.ToString()) && x.Id.Equals(questionId))
+                                                  .FirstOrDefaultAsync();
+
+                if (question is null)
+                    return CommonResponse<DtoQuestionAnswers>.Response("Question doesn't exists", false, System.Net.HttpStatusCode.NotFound, null);
+
+                var dtoQuestionAnswers = _mapper.Map<DtoQuestionAnswers>(question);
+
+                return CommonResponse<DtoQuestionAnswers>.Response($"Question retrieved succsessfully with answers ", true, System.Net.HttpStatusCode.OK, dtoQuestionAnswers);
+            }
+            catch (Exception ex)
+            {
+                await _log.CreateLogException(ex, "GetQuestionWithAnswersNoChildAnswers", userId);
+
+                return CommonResponse<DtoQuestionAnswers>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
+            }
+        }
 
         #endregion
     }

@@ -1,5 +1,7 @@
-﻿using FAQ.DTO.QuestionsDtos;
+﻿#region Usings
+using FAQ.DTO.QuestionsDtos;
 using FAQ.SHARED.ResponseTypes;
+#endregion
 
 namespace FAQ.BLL.RepositoryService.Interfaces
 {
@@ -59,6 +61,18 @@ namespace FAQ.BLL.RepositoryService.Interfaces
         Task<CommonResponse<DtoDisabledQuestion>> UnDisableQuestion
         (
             Guid userId,
+            Guid questionId
+        );
+
+        Task<CommonResponse<DtoQuestionAnswers>> GetQuestionWithAnswersAndChildAnswers
+        (
+            Guid userId,
+            Guid questionId
+        );
+
+        Task<CommonResponse<DtoQuestionAnswers>> GetQuestionWithAnswersNoChildAnswers
+        (
+             Guid userId,
             Guid questionId
         );
     }

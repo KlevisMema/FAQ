@@ -87,7 +87,7 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
                 var user = await _userManager.FindByEmailAsync(logIn.Email);
 
                 if (user is null)
-                    return CommonResponse<DtoLogin>.Response(_logInMessageResponse.UserNotFound, false, System.Net.HttpStatusCode.NotFound, logIn);
+                    return CommonResponse<DtoLogin>.Response(_logInMessageResponse.UserNotFound, false, System.Net.HttpStatusCode.NotFound, null);
 
                 var emailConfirmed = await _userManager.IsEmailConfirmedAsync(user!);
 
@@ -119,7 +119,7 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
             {
                 await _log.CreateLogException(ex, "Log In", null);
 
-                return CommonResponse<DtoLogin>.Response(ExceptionMessageResponse, false, System.Net.HttpStatusCode.InternalServerError, new DtoLogin());
+                return CommonResponse<DtoLogin>.Response(ExceptionMessageResponse, false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
 
