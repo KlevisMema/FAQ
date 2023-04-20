@@ -418,7 +418,7 @@ namespace FAQ.BLL.RepositoryService.Implementation
 
         public async Task<CommonResponse<DtoQuestionAnswers>> GetQuestionWithAnswersNoChildAnswers
         (
-             Guid userId,
+            Guid userId,
             Guid questionId
         )
         {

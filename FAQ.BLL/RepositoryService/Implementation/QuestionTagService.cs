@@ -82,7 +82,6 @@ namespace FAQ.BLL.RepositoryService.Implementation
                     TagId = dtoCreateQuestion.TagId
                 };
 
-
                 _db.QuestionTags.Add(QuestionTag);
                 await _db.SaveChangesAsync();
 

@@ -205,6 +205,7 @@ namespace FAQ.API.Startup
             #region Automapper services
             Services.AddAutoMapper(typeof(TagMappings));
             Services.AddAutoMapper(typeof(UserMappings));
+            Services.AddAutoMapper(typeof(AnswerMappings));
             Services.AddAutoMapper(typeof(QuestionMappings));
             Services.AddAutoMapper(typeof(QuestionTagMappings));
             #endregion
@@ -213,6 +214,7 @@ namespace FAQ.API.Startup
             Services.AddTransient<ILogService, LogService>();
             Services.AddTransient<IEmailSender, EmailSender>();
             Services.AddTransient<ILoginService, LoginService>();
+            Services.AddTransient<IAnswerService, AnswerService>();
             Services.AddTransient<IAccountService, AccountService>();
             Services.AddTransient<IQuestionService, QuestionService>();
             Services.AddTransient<IRegisterService, RegisterService>();
