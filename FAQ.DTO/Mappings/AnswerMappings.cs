@@ -18,6 +18,13 @@ namespace FAQ.DTO.Mappings
                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                .ForMember(dest => dest.P_Answer, opt => opt.MapFrom(src => src.Answer));
 
+            CreateMap<DtoAnswerOfAnswer, Answer>()
+               .ForMember(dest => dest.QuestionId, opt => opt.MapFrom(src => src.QuestionId))
+               .ForMember(dest => dest.P_Answer, opt => opt.MapFrom(src => src.Answer))
+               .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+               .ForMember(dest => dest.P_Answer, opt => opt.MapFrom(src => src.Answer))
+               .ForMember(dest => dest.ParentAnswerId, opt => opt.MapFrom(src => src.ParentAnswerId));
+
         }
     }
 }

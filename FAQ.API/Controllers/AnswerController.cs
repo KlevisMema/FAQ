@@ -46,5 +46,25 @@ namespace FAQ.API.Controllers
         {
             return StatusCodeResponse<DtoCreateAnswer>.ControllerResponse(await _answerService.CreateAnswer(userId, dtoCreateAnswer));
         }
+
+        [HttpPost("CreateAnswerOfAnAnswer/{userId}")]
+        public async Task<ActionResult<CommonResponse<DtoAnswerOfAnswer>>> CreateAnswerOfAnAnswer
+        (
+            [FromRoute] Guid userId,
+            [FromForm] DtoAnswerOfAnswer answerOfAnswer
+        )
+        {
+            return StatusCodeResponse<DtoAnswerOfAnswer>.ControllerResponse(await _answerService.CreateAnswerOfAnAnswer(userId, answerOfAnswer));
+        }
+
+        [HttpPut("EditAnswer/{userId}")]
+        public async Task<ActionResult<CommonResponse<DtoEditAnswer>>> EditAnswer
+        (
+            [FromRoute] Guid userId,
+            [FromForm] DtoEditAnswer editAnswer
+        )
+        {
+            return StatusCodeResponse<DtoEditAnswer>.ControllerResponse(await _answerService.EditAnswer(userId, editAnswer));
+        }
     }
 }

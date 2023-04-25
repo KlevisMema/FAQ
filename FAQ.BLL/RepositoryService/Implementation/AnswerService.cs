@@ -95,5 +95,78 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<DtoCreateAnswer>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
+
+        public async Task<CommonResponse<DtoAnswerOfAnswer>> CreateAnswerOfAnAnswer
+        (
+            Guid userId,
+            DtoAnswerOfAnswer answerOfAnswer
+        )
+        {
+            try
+            {
+                var answer = _mapper.Map<Answer>(answerOfAnswer);
+
+                answer.UserId = userId.ToString();
+
+                _db.Add(answer);
+                await _db.SaveChangesAsync();
+
+                return CommonResponse<DtoAnswerOfAnswer>.Response("Answers created succsessfully", true, System.Net.HttpStatusCode.OK, answerOfAnswer);
+            }
+            catch (Exception ex)
+            {
+                await _log.CreateLogException(ex, "CreateAnswerOfAnAnswer", userId);
+
+                return CommonResponse<DtoAnswerOfAnswer>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
+            }
+        }
+
+        public async Task<CommonResponse<DtoEditAnswer>> EditAnswer
+        (
+            Guid userId,
+            DtoEditAnswer editAnswer
+        )
+        {
+            try
+            {
+                var findAnswer = await _db.Answers.FirstOrDefaultAsync(x => x.Id.Equals(editAnswer.Id) && x.UserId.Equals(userId.ToString()));
+
+                if (findAnswer is null)
+                    return CommonResponse<DtoEditAnswer>.Response("Answer doesn't exists", false, System.Net.HttpStatusCode.NotFound, null);
+
+                findAnswer.P_Answer = editAnswer.Answer;
+                findAnswer.EditedAt = DateTime.Now;
+
+                _db.Answers.Update(findAnswer);
+                await _db.SaveChangesAsync();
+
+                return CommonResponse<DtoEditAnswer>.Response("Answers edited succsessfully", true, System.Net.HttpStatusCode.OK, editAnswer);
+
+            }
+            catch (Exception ex)
+            {
+                await _log.CreateLogException(ex, "EditAnswer", userId);
+
+                return CommonResponse<DtoEditAnswer>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
+            }
+        }
+
+        //public async Task<CommonResponse<>> DeleteAnswer
+        //(
+        //    Guid userId,
+        //    Guid answerId
+        //)
+        //{
+        //    try
+        //    {
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _log.CreateLogException(ex, "DeleteAnswer", userId);
+
+        //        return CommonResponse<DtoAnswerOfAnswer>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
+        //    }
+        //}
     }
 }

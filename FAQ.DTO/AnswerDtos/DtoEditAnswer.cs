@@ -2,10 +2,10 @@
 
 namespace FAQ.DTO.AnswerDtos
 {
-    public class DtoCreateAnswer
+    public class DtoEditAnswer
     {
         [Required]
-        public Guid QuestionId { get; set; }
+        public Guid Id { get; set; }
         [Required]
         public string Answer { get; set; } = string.Empty;
     }
