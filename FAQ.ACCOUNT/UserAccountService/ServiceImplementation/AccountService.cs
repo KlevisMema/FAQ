@@ -11,6 +11,7 @@ using FAQ.DTO.UserDtos;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using FAQ.SECURITY.UserAccountService.Settings;
+using FAQ.EMAIL.EmailService.ServiceInterface;
 #endregion
 
 namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
@@ -49,6 +50,10 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
         ///     A <see cref="UploadProfilePictureMessageResponse"/> object
         /// </summary>
         private UploadProfilePictureMessageResponse _uploadProfilePictureMessageResponse = new();
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly IEmailSender _emailSender;
 
         /// <summary>
         ///     Services Injection
@@ -56,12 +61,14 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
         /// <param name="log"> Log Service </param>
         /// <param name="userManager"> User Manager Service </param>
         /// <param name="db"> Database Context </param>
+        /// <param name="emailSender"></param>
         /// <param name="messageResponses"> Message response </param>
         /// <param name="optionsProfilePicturePath"> Option settings <see cref="ProfilePictureImagePath"/> </param>
         public AccountService
         (
             ILogService log,
             ApplicationDbContext db,
+            IEmailSender emailSender,
             UserManager<User> userManager,
             IOptions<ServiceMessageResponseContainer> messageResponses,
             IOptions<ProfilePictureImagePath> optionsProfilePicturePath
@@ -70,6 +77,7 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
             _db = db;
             _log = log;
             _userManager = userManager;
+            _emailSender = emailSender;
             _optionsProfilePicturePath = optionsProfilePicturePath;
             ExceptionMessageResponse = messageResponses.Value.Exception;
             _accountMessageResponse = messageResponses.Value.AccountMessageResponse!;
@@ -108,12 +116,16 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
                 _db.Users.Update(user);
                 await _db.SaveChangesAsync();
 
+                await _log.CreateLogAction($"User with id {userId} updated confiremd his email", "ConfirmEmail", Guid.Parse(userId));
+
                 return CommonResponse<string>.Response(_accountMessageResponse.AccountConfirmed, true, System.Net.HttpStatusCode.OK, otp);
 
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "Log In", Guid.Parse(userId));
+
+                await _emailSender.SendEmailToDevTeam(Guid.Parse(userId));
 
                 return CommonResponse<string>.Response(ExceptionMessageResponse, false, System.Net.HttpStatusCode.InternalServerError, string.Empty);
             }
@@ -174,11 +186,15 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
                             updateUserResult.Errors
                         );
 
+                await _log.CreateLogAction($"User with id {userId} updated his profile picture", "UploadProfilePicture", userId);
+
                 return CommonResponse<DtoProfilePicUpload>.Response(_uploadProfilePictureMessageResponse.Succsessfull, true, System.Net.HttpStatusCode.OK, picUpload);
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "UploadProfilePicture", userId);
+
+                await _emailSender.SendEmailToDevTeam(userId);
 
                 return CommonResponse<DtoProfilePicUpload>.Response(ExceptionMessageResponse, false, System.Net.HttpStatusCode.InternalServerError, picUpload);
             }

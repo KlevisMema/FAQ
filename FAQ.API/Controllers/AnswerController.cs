@@ -66,5 +66,15 @@ namespace FAQ.API.Controllers
         {
             return StatusCodeResponse<DtoEditAnswer>.ControllerResponse(await _answerService.EditAnswer(userId, editAnswer));
         }
+
+        [HttpDelete("DeleteAnswer/{userId}/{answerId}")]
+        public async Task<ActionResult<CommonResponse<DtoDeleteAnswer>>> EditAnswer
+        (
+            [FromRoute] Guid userId,
+            Guid answerId
+        )
+        {
+            return StatusCodeResponse<DtoDeleteAnswer>.ControllerResponse(await _answerService.DeleteAnswer(userId, answerId));
+        }
     }
 }

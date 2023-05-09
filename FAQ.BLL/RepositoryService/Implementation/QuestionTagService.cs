@@ -40,33 +40,7 @@ namespace FAQ.BLL.RepositoryService.Implementation
             _log = log;
             _mapper = mapper;
         }
-
         #endregion
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        //public async Task<CommonResponse<List<DtoTag>>> GetTags
-        //(
-        //    Guid userId
-        //)
-        //{
-        //    try
-        //    {
-        //        var tags = await _db.Tags.ToListAsync();
-
-        //        var dtoTags = _mapper.Map<List<DtoTag>>(tags);
-
-        //        return CommonResponse<List<DtoTag>>.Response("Tags retrieved successfully.", true, System.Net.HttpStatusCode.OK, dtoTags);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await _log.CreateLogException(ex, "GetTags", userId);
-
-        //        return CommonResponse<List<DtoTag>>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
-        //    }
-        //}
 
         public async Task<CommonResponse<DtoCreateQuestion>> CreateQuestionTag
         (

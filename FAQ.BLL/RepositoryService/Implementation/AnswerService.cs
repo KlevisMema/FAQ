@@ -7,6 +7,7 @@ using FAQ.SHARED.ResponseTypes;
 using FAQ.LOGGER.ServiceInterface;
 using Microsoft.EntityFrameworkCore;
 using FAQ.BLL.RepositoryService.Interfaces;
+using FAQ.EMAIL.EmailService.ServiceInterface;
 #endregion
 
 namespace FAQ.BLL.RepositoryService.Implementation
@@ -24,7 +25,12 @@ namespace FAQ.BLL.RepositoryService.Implementation
         /// 
         /// </summary>
         private readonly ApplicationDbContext _db;
+        /// <summary>
+        /// 
+        /// </summary>
         private readonly ILogService _log;
+
+        private readonly IEmailSender _emailSender;
 
         /// <summary>
         /// 
@@ -36,12 +42,14 @@ namespace FAQ.BLL.RepositoryService.Implementation
         (
             IMapper mapper,
             ILogService log,
-            ApplicationDbContext db
+            ApplicationDbContext db,
+            IEmailSender emailSender
         )
         {
             _db = db;
-            _mapper = mapper;
             _log = log;
+            _mapper = mapper;
+            _emailSender = emailSender;
         }
 
         public async Task<CommonResponse<List<DtoGetAnswer>>> GetAnswersOfQuestion
@@ -86,11 +94,15 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 _db.Add(answer);
                 await _db.SaveChangesAsync();
 
+                await _log.CreateLogAction($"User with id {userId} created an answer with id  {answer.Id} for question {answer.QuestionId}", "CreateAnswer", userId);
+
                 return CommonResponse<DtoCreateAnswer>.Response("Answers created succsessfully", true, System.Net.HttpStatusCode.OK, dtoCreateAnswer);
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "GetAnswersOfQuestion", userId);
+
+                await _emailSender.SendEmailToDevTeam(userId);
 
                 return CommonResponse<DtoCreateAnswer>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
@@ -111,11 +123,15 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 _db.Add(answer);
                 await _db.SaveChangesAsync();
 
+                await _log.CreateLogAction($"User with id {userId} created an answer with id {answer.Id} for answer {answer.ParentAnswerId} of the question with id {answer.QuestionId}", "CreateAnswerOfAnAnswer", userId);
+
                 return CommonResponse<DtoAnswerOfAnswer>.Response("Answers created succsessfully", true, System.Net.HttpStatusCode.OK, answerOfAnswer);
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "CreateAnswerOfAnAnswer", userId);
+
+                await _emailSender.SendEmailToDevTeam(userId);
 
                 return CommonResponse<DtoAnswerOfAnswer>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
@@ -140,6 +156,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 _db.Answers.Update(findAnswer);
                 await _db.SaveChangesAsync();
 
+                await _log.CreateLogAction($"User with id {userId} updated an answer with id {findAnswer.Id} for question {findAnswer.QuestionId}", "EditAnswer", userId);
+
                 return CommonResponse<DtoEditAnswer>.Response("Answers edited succsessfully", true, System.Net.HttpStatusCode.OK, editAnswer);
 
             }
@@ -147,26 +165,45 @@ namespace FAQ.BLL.RepositoryService.Implementation
             {
                 await _log.CreateLogException(ex, "EditAnswer", userId);
 
+                await _emailSender.SendEmailToDevTeam(userId);
+
                 return CommonResponse<DtoEditAnswer>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
 
-        //public async Task<CommonResponse<>> DeleteAnswer
-        //(
-        //    Guid userId,
-        //    Guid answerId
-        //)
-        //{
-        //    try
-        //    {
+        public async Task<CommonResponse<DtoDeleteAnswer>> DeleteAnswer
+        (
+            Guid userId,
+            Guid answerId
+        )
+        {
+            try
+            {
+                var answer = await _db.Answers.FirstOrDefaultAsync(x => x.Id.Equals(answerId) && x.UserId.Equals(userId.ToString()));
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await _log.CreateLogException(ex, "DeleteAnswer", userId);
+                if (answer is null)
+                    return CommonResponse<DtoDeleteAnswer>.Response("Answer doesn't exists!", false, System.Net.HttpStatusCode.NotFound, null);
 
-        //        return CommonResponse<DtoAnswerOfAnswer>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
-        //    }
-        //}
+                answer.IsDeleted = true;
+                answer.EditedAt = DateTime.Now;
+                answer.DeletedAt = DateTime.Now;
+
+                _db.Answers.Update(answer);
+                await _db.SaveChangesAsync();
+
+                await _log.CreateLogAction($"User with id {userId} deleted an answer with id {answer.Id} for question {answer.QuestionId}", "DeleteAnswer", userId);
+
+                return CommonResponse<DtoDeleteAnswer>.Response("Answer deleted succsessfully!", true, System.Net.HttpStatusCode.OK, null);
+            }
+            catch (Exception ex)
+            {
+                await _log.CreateLogException(ex, "DeleteAnswer", userId);
+
+                await _emailSender.SendEmailToDevTeam(userId);
+
+                return CommonResponse<DtoDeleteAnswer>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
+            }
+        }
+
     }
 }

@@ -94,6 +94,8 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
            DtoRegister register
         )
         {
+            string UserId = "";
+
             try
             {
                 var user = _mapper.Map<User>(register);
@@ -108,6 +110,8 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
                 {
                     var registeredUser = await _userManager.FindByEmailAsync(register.Email);
 
+                    UserId = registeredUser!.Id;
+
                     var role = await _db.Roles.FirstOrDefaultAsync(x => x.Name!.Equals("User"));
 
                     if (role is not null)
@@ -120,10 +124,12 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
                         (
                             registerMessageResponse.SaveSuccsessRegistrationLog
                                 .Replace("{DateTime.Now}", DateTime.Now.ToString())
-                                .Replace("{registeredUser.Email}",registeredUser!.Email),
+                                .Replace("{registeredUser.Email}", registeredUser!.Email),
                             "Register",
                             Guid.Parse(registeredUser.Id)
                         );
+
+                    await _log.CreateLogAction($"User with id {registeredUser!.Id} created an was just created", "Register", Guid.Parse(registeredUser!.Id));
 
                     return CommonResponse<DtoRegister>.Response(registerMessageResponse.SuccsessRegistration, true, System.Net.HttpStatusCode.OK, register);
                 }
@@ -133,6 +139,8 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "Register", null);
+
+                await _emailSender.SendEmailToDevTeam(Guid.Parse(UserId));
 
                 return CommonResponse<DtoRegister>.Response(ExceptionMessageResponse, false, System.Net.HttpStatusCode.InternalServerError, register);
             }

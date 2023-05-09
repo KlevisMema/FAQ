@@ -8,6 +8,7 @@ using FAQ.LOGGER.ServiceInterface;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using FAQ.BLL.RepositoryService.Interfaces;
+using FAQ.EMAIL.EmailService.ServiceInterface;
 #endregion
 
 namespace FAQ.BLL.RepositoryService.Implementation
@@ -32,6 +33,10 @@ namespace FAQ.BLL.RepositoryService.Implementation
         /// </summary>
         private readonly IMapper _mapper;
         /// <summary>
+        /// 
+        /// </summary>
+        private readonly IEmailSender _emailSender;
+        /// <summary>
         ///     Create a new instance of <see cref="QuestionService"/> and 
         ///     inject <see cref="ILogService"/> and <see cref="ApplicationDbContext"/>.
         /// </summary>
@@ -42,12 +47,14 @@ namespace FAQ.BLL.RepositoryService.Implementation
         (
             IMapper mapper,
             ILogService log,
-            ApplicationDbContext db
+            ApplicationDbContext db,
+            IEmailSender emailSender
         )
         {
             _db = db;
             _log = log;
             _mapper = mapper;
+            _emailSender = emailSender;
         }
         #endregion
 
@@ -83,6 +90,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
             {
                 await _log.CreateLogException(ex, "GetAllQuestions", userId);
 
+                await _emailSender.SendEmailToDevTeam(userId);
+
                 return CommonResponse<List<DtoGetQuestion>>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
@@ -116,6 +125,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "GetAllNonDisabledQuestions", userId);
+
+                await _emailSender.SendEmailToDevTeam(userId);
 
                 return CommonResponse<List<DtoGetQuestion>>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
@@ -155,6 +166,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
             {
                 await _log.CreateLogException(ex, "GetQuestion", userId);
 
+                await _emailSender.SendEmailToDevTeam(userId);
+
                 return CommonResponse<DtoGetQuestion>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
@@ -180,11 +193,15 @@ namespace FAQ.BLL.RepositoryService.Implementation
 
                 dtoQuestion.TagId = newQuestion.TagId;
 
+                await _log.CreateLogAction($"User with id {userId} updated the question with id  {question.Id}", "CreateQuestion", userId);
+
                 return CommonResponse<DtoCreateQuestionReturn>.Response("Question created succsessfully", true, System.Net.HttpStatusCode.OK, dtoQuestion);
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "CreateQuestion", userId);
+
+                await _emailSender.SendEmailToDevTeam(userId);
 
                 return CommonResponse<DtoCreateQuestionReturn>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
@@ -211,11 +228,15 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 _db.Questions.Update(questionToBeUpdated);
                 await _db.SaveChangesAsync();
 
+                await _log.CreateLogAction($"User with id {userId} updated the question with id  {question.Id}", "UpdateQuestion", userId);
+
                 return CommonResponse<DtoUpdateQuestion>.Response("Question updated succsessfully", true, System.Net.HttpStatusCode.OK, question);
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "UpdateQuestion", userId);
+
+                await _emailSender.SendEmailToDevTeam(userId);
 
                 return CommonResponse<DtoUpdateQuestion>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, question);
             }
@@ -252,12 +273,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
 
                 var dtoQuestion = _mapper.Map<DtoDisabledQuestion>(question);
 
+                await _log.CreateLogAction($"User with id {userId} disabled the question with id  {question!.Id}", "DisableQuestion", userId);
+
                 return CommonResponse<DtoDisabledQuestion>.Response("Question disabled succsessfully", true, System.Net.HttpStatusCode.OK, dtoQuestion);
 
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "DisableQuestion", userId);
+
+                await _emailSender.SendEmailToDevTeam(userId);
 
                 return CommonResponse<DtoDisabledQuestion>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, new DtoDisabledQuestion());
             }
@@ -284,6 +309,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
             {
                 await _log.CreateLogException(ex, "GetAllDisabledQuesions", userId);
 
+                await _emailSender.SendEmailToDevTeam(userId);
+
                 return CommonResponse<List<DtoDisabledQuestion>>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
@@ -299,11 +326,14 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 var question = await _db.Questions.Include(user => user.User)
                                                   .Include(x => x.QuestionTags!)
                                                   .ThenInclude(x => x.Tag)
-                                                  .Where(x => x.UserId.Equals(userId.ToString()) && x.IsDeleted && x.Id.Equals(questionId))
+                                                  .Where(x => x.UserId.Equals(userId.ToString()) && x.Id.Equals(questionId))
                                                   .FirstOrDefaultAsync();
 
                 if (question is null)
-                    CommonResponse<DtoDisabledQuestion>.Response($"Question doesn't exists", false, System.Net.HttpStatusCode.NotFound, null);
+                    return CommonResponse<DtoDisabledQuestion>.Response($"Question doesn't exists", false, System.Net.HttpStatusCode.NotFound, null);
+
+                if (!question.IsDeleted)
+                    return CommonResponse<DtoDisabledQuestion>.Response($"Question it's not disabled", false, System.Net.HttpStatusCode.NotFound, null);
 
                 var dtoQuestion = _mapper.Map<DtoDisabledQuestion>(question);
 
@@ -312,6 +342,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "GetDisabledQuesion", userId);
+
+                await _emailSender.SendEmailToDevTeam(userId);
 
                 return CommonResponse<DtoDisabledQuestion>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
@@ -325,21 +357,35 @@ namespace FAQ.BLL.RepositoryService.Implementation
         {
             try
             {
-                var questionToBeDeleted = await _db.Questions.FirstOrDefaultAsync(q => q.Id.Equals(questionId) && q.UserId.Equals(userId.ToString()));
+                var questionToBeDeleted = await _db.Questions.Include(x => x.Answers)
+                                                             .FirstOrDefaultAsync(q => q.Id.Equals(questionId) && q.UserId.Equals(userId.ToString()));
 
-                var dtoQuestion = _mapper.Map<DtoDeletedQuestion>(questionToBeDeleted);
+                //var dtoQuestion = _mapper.Map<DtoDeletedQuestion>(questionToBeDeleted);
 
                 if (questionToBeDeleted is null)
                     return CommonResponse<DtoDeletedQuestion>.Response("Question doesn't exists", false, System.Net.HttpStatusCode.NotFound, null);
 
+                if (questionToBeDeleted.Answers is not null)
+                {
+                    foreach (var item in questionToBeDeleted.Answers)
+                    {
+                        _db.Answers.Remove(item);
+                        await _db.SaveChangesAsync();
+                    }
+                }
+
                 _db.Questions.Remove(questionToBeDeleted);
                 await _db.SaveChangesAsync();
 
-                return CommonResponse<DtoDeletedQuestion>.Response("Question deleted succsessfully", true, System.Net.HttpStatusCode.OK, dtoQuestion);
+                await _log.CreateLogAction($"User with id {userId} deleted the question with id  {questionId}", "DeleteQuestion", userId);
+
+                return CommonResponse<DtoDeletedQuestion>.Response("Question deleted succsessfully", true, System.Net.HttpStatusCode.OK, null);
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "DeleteQuestion", userId);
+
+                await _emailSender.SendEmailToDevTeam(userId);
 
                 return CommonResponse<DtoDeletedQuestion>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
@@ -375,11 +421,15 @@ namespace FAQ.BLL.RepositoryService.Implementation
 
                 var dtoQuestion = _mapper.Map<DtoDisabledQuestion>(question);
 
+                await _log.CreateLogAction($"User with id {userId} undisabled the question with id  {question!.Id}", "UnDisableQuestion", userId);
+
                 return CommonResponse<DtoDisabledQuestion>.Response("Question undisabled succsessfully", true, System.Net.HttpStatusCode.OK, dtoQuestion);
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "DeleteQuestion", userId);
+
+                await _emailSender.SendEmailToDevTeam(userId);
 
                 return CommonResponse<DtoDisabledQuestion>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
@@ -412,6 +462,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
             {
                 await _log.CreateLogException(ex, "GetQuestionWithAnswersAndChildAnswers", userId);
 
+                await _emailSender.SendEmailToDevTeam(userId);
+
                 return CommonResponse<DtoQuestionAnswers>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
@@ -441,6 +493,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "GetQuestionWithAnswersNoChildAnswers", userId);
+
+                await _emailSender.SendEmailToDevTeam(userId);
 
                 return CommonResponse<DtoQuestionAnswers>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }

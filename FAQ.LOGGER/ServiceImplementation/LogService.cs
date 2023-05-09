@@ -51,6 +51,9 @@ namespace FAQ.LOGGER.ServiceImplementation
         {
             try
             {
+
+
+
                 LogType? logType = await _db.LogTypes.FirstOrDefaultAsync(x => x.Name!.Equals("Exception"));
 
                 Log log = new()

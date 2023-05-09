@@ -50,8 +50,8 @@ namespace FAQ.HELPERS.Helpers.Email
         ///     Send email form email confirmation, method  implementation.
         /// </summary>
         /// <param name="userConfirmEmail"> User object Dto of type <see cref="DtoUserConfirmEmail"/> </param>
-        /// <returns> <see cref="CommonResponse{T}"/> where T is <see cref="string"/> </returns>
-        public async Task<CommonResponse<string>> SendConfirmEmail
+        /// <returns> Nothing </returns>
+        public async Task SendConfirmEmail
         (
             DtoUserConfirmEmail userConfirmEmail,
             string otp
@@ -100,14 +100,53 @@ namespace FAQ.HELPERS.Helpers.Email
 
                 await _log.CreateLogAction($"User with email : {userConfirmEmail.Email} was sent an email with the otp : {otp}", "SendConfirmEmail", userConfirmEmail.UserId);
 
-                return CommonResponse<string>.Response($"An confirmation email was sent to the user : {userConfirmEmail.Email}", true, HttpStatusCode.OK, string.Empty);
-
             }
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "SendConfirmEmail", userConfirmEmail.UserId);
+            }
+        }
 
-                return CommonResponse<string>.Response($"Internal server error", false, HttpStatusCode.InternalServerError, string.Empty);
+        /// <summary>
+        ///     Notify dev team if something went wrong.
+        /// </summary>
+        /// <param name="userId"> Id of the user </param>
+        /// <returns> Nothig </returns>
+        public async Task SendEmailToDevTeam
+        (
+           Guid userId
+        )
+        {
+            try
+            {
+                MailMessage message = new()
+                {
+                    From = new MailAddress(_emailSettigs.Value.From),
+                    Subject = _emailSettigs.Value.Subject,
+                    IsBodyHtml = _emailSettigs.Value.IsBodyHtml,
+                    Body = $"""
+                                A problem happened to the application for user {userId}
+                                go and check db. Time when happened {DateTime.Now}.
+                            """
+                };
+
+                message.To.Add(new MailAddress(_emailSettigs.Value.From));
+
+                SmtpClient smtpClient = new()
+                {
+                    Port = _emailSettigs.Value.Port,
+                    Host = _emailSettigs.Value.Host,
+                    EnableSsl = _emailSettigs.Value.UseSSL,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(_emailSettigs.Value.SmtpUsername, _emailSettigs.Value.SmtpPassword),
+                    DeliveryMethod = SmtpDeliveryMethod.Network
+                };
+
+                await smtpClient.SendMailAsync(message);
+            }
+            catch (Exception ex)
+            {
+                await _log.CreateLogException(ex, "SendEmailToDevTeam", userId);
             }
         }
 

@@ -9,6 +9,7 @@ using FAQ.ACCOUNT.AuthorizationService.Interfaces;
 using FAQ.ACCOUNT.AuthenticationService.ServiceInterface;
 using FAQ.SHARED.ServicesMessageResponse;
 using Microsoft.Extensions.Options;
+using FAQ.EMAIL.EmailService.ServiceInterface;
 #endregion
 
 namespace FAQ.ACCOUNT.AuthorizationService.Implementation
@@ -43,6 +44,10 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
         ///     Exception message response
         /// </summary>
         private string ExceptionMessageResponse { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly IEmailSender _emailSender;
 
         /// <summary>
         ///     Inject all services in constructor
@@ -55,6 +60,7 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
         public LoginService
         (
             ILogService log,
+            IEmailSender emailSender,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IOAuthJwtTokenService oAuthService,
@@ -63,6 +69,7 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
         {
             _log = log;
             _userManager = userManager;
+            _emailSender = emailSender;
             _oAuthService = oAuthService;
             _signInManager = signInManager;
             _logInMessageResponse = messageResponses.Value.LogInMessageResponse!;
@@ -82,6 +89,8 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
             DtoLogin logIn
         )
         {
+            string UserId = "";
+
             try
             {
                 var user = await _userManager.FindByEmailAsync(logIn.Email);
@@ -110,6 +119,8 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
                         Roles = roles.ToList(),
                     };
 
+                    UserId = user.Id;
+
                     return CommonResponse<DtoLogin>.Response($"{_oAuthService.CreateToken(userTransformedObj)}", true, System.Net.HttpStatusCode.OK, logIn);
                 }
 
@@ -118,6 +129,8 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
             catch (Exception ex)
             {
                 await _log.CreateLogException(ex, "Log In", null);
+
+                await _emailSender.SendEmailToDevTeam(Guid.Parse(UserId));
 
                 return CommonResponse<DtoLogin>.Response(ExceptionMessageResponse, false, System.Net.HttpStatusCode.InternalServerError, null);
             }

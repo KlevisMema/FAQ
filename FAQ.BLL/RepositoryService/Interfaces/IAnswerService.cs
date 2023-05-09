@@ -27,5 +27,10 @@ namespace FAQ.BLL.RepositoryService.Interfaces
            Guid userId,
            DtoEditAnswer editAnswer
         );
+        Task<CommonResponse<DtoDeleteAnswer>> DeleteAnswer
+        (
+            Guid userId,
+            Guid answerId
+        );
     }
 }
