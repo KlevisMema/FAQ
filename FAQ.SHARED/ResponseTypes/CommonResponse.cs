@@ -75,7 +75,8 @@ namespace FAQ.SHARED.ResponseTypes
         /// <param name="statusCode"> Status code <see cref="HttpStatusCode"/> value </param>
         /// <param name="Value"> Object <see cref="T"/> value, it's nullable </param>
         /// <returns> <see cref="CommonResponse{T}"/> </returns>
-        public static CommonResponse<T> Response
+        public static CommonResponse<T> 
+        Response
         (
             string? message,
             bool succsess,

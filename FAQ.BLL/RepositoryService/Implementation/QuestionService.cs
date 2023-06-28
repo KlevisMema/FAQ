@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using FAQ.BLL.RepositoryService.Interfaces;
 using FAQ.EMAIL.EmailService.ServiceInterface;
+using FAQ.BLL.RepositoryService.BaseServices;
 #endregion
 
 namespace FAQ.BLL.RepositoryService.Implementation
@@ -17,23 +18,11 @@ namespace FAQ.BLL.RepositoryService.Implementation
     ///     A Service class that proviced functionalities for
     ///     questions by implementing the <see cref="IQuestionService"/> interface.
     /// </summary>
-    public class QuestionService : IQuestionService
+    public class QuestionService : CommonServices, IQuestionService
     {
-        #region Services Injection
+        #region Properties / Constructor / Injections
         /// <summary>
-        ///     The <see cref="ILogService"/>.
-        /// </summary>
-        private readonly ILogService _log;
-        /// <summary>
-        ///     The <see cref="ApplicationDbContext"/>.
-        /// </summary>
-        private readonly ApplicationDbContext _db;
-        /// <summary>
-        ///    The <see cref="IMapper"/>.
-        /// </summary>
-        private readonly IMapper _mapper;
-        /// <summary>
-        /// 
+        ///     The <see cref="IEmailSender"/>
         /// </summary>
         private readonly IEmailSender _emailSender;
         /// <summary>
@@ -49,11 +38,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
             ILogService log,
             ApplicationDbContext db,
             IEmailSender emailSender
-        )
+        ) : base(mapper, log, db)
         {
-            _db = db;
-            _log = log;
-            _mapper = mapper;
             _emailSender = emailSender;
         }
         #endregion
@@ -95,7 +81,6 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<List<DtoGetQuestion>>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
-
         /// <summary>
         ///     Get all questions from questions table
         ///     method implementation that are not disabled.
@@ -131,7 +116,6 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<List<DtoGetQuestion>>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
-
         /// <summary>
         ///     Get a question from questions table
         ///     method implementation.
@@ -141,7 +125,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
         ///     <see cref="Task{TResult}"/> where TResult is <see cref="CommonResponse{T}"/> 
         ///     where T is <see cref="DtoGetQuestion"/>.
         /// </returns>
-        public async Task<CommonResponse<DtoGetQuestion>> GetQuestion
+        public async Task<CommonResponse<DtoGetQuestion>>
+        GetQuestion
         (
             Guid userId,
             Guid qestionId
@@ -171,8 +156,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<DtoGetQuestion>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
-
-        public async Task<CommonResponse<DtoCreateQuestionReturn>> CreateQuestion
+        /// <summary>
+        ///     Create a question for a user method implementation.
+        /// </summary>
+        /// <param name="userId"> The user Id </param>
+        /// <param name="newQuestion"> The <see cref="DtoCreateQuestion"/> object </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoCreateQuestionReturn"/>
+        /// </returns>
+        public async Task<CommonResponse<DtoCreateQuestionReturn>>
+        CreateQuestion
         (
             Guid userId,
             DtoCreateQuestion newQuestion
@@ -206,8 +199,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<DtoCreateQuestionReturn>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
-
-        public async Task<CommonResponse<DtoUpdateQuestion>> UpdateQuestion
+        /// <summary>
+        ///     Update a question of a user method implementation.
+        /// </summary>
+        /// <param name="userId"> The user Id </param>
+        /// <param name="question"> The <see cref="DtoUpdateQuestion"/> </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoUpdateQuestion"/>
+        /// </returns>
+        public async Task<CommonResponse<DtoUpdateQuestion>>
+        UpdateQuestion
         (
             Guid userId,
             DtoUpdateQuestion question
@@ -241,8 +242,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<DtoUpdateQuestion>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, question);
             }
         }
-
-        public async Task<CommonResponse<DtoDisabledQuestion>> DisableQuestion
+        /// <summary>
+        ///     Disable a question of a user method implementation
+        /// </summary>
+        /// <param name="userId"> The user id </param>
+        /// <param name="questionId"> The question id</param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoDisabledQuestion"/>
+        /// </returns>
+        public async Task<CommonResponse<DtoDisabledQuestion>>
+        DisableQuestion
         (
             Guid userId,
             Guid questionId
@@ -287,8 +296,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<DtoDisabledQuestion>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, new DtoDisabledQuestion());
             }
         }
-
-        public async Task<CommonResponse<List<DtoDisabledQuestion>>> GetAllDisabledQuesions
+        /// <summary>
+        ///     Get all the disabled question of a user method implementation.
+        /// </summary>
+        /// <param name="userId"> The user id </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="List{T}"/> and 
+        ///     T is <see cref="DtoDisabledQuestion"/>
+        /// </returns>
+        public async Task<CommonResponse<List<DtoDisabledQuestion>>>
+        GetAllDisabledQuesions
         (
             Guid userId
         )
@@ -314,8 +331,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<List<DtoDisabledQuestion>>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
-
-        public async Task<CommonResponse<DtoDisabledQuestion>> GetDisabledQuesion
+        /// <summary>
+        ///     Get all disabled quesitons of a user method implementation.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="questionId"> The id of the question </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoDisabledQuestion"/>
+        /// </returns>
+        public async Task<CommonResponse<DtoDisabledQuestion>> 
+        GetDisabledQuesion
         (
             Guid userId,
             Guid questionId
@@ -348,8 +373,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<DtoDisabledQuestion>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
-
-        public async Task<CommonResponse<DtoDeletedQuestion>> DeleteQuestion
+        /// <summary>
+        ///     Delete a question of a user method implementation.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="questionId"> The question id </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoDeletedQuestion"/>
+        /// </returns>
+        public async Task<CommonResponse<DtoDeletedQuestion>> 
+        DeleteQuestion
         (
             Guid userId,
             Guid questionId
@@ -359,8 +392,6 @@ namespace FAQ.BLL.RepositoryService.Implementation
             {
                 var questionToBeDeleted = await _db.Questions.Include(x => x.Answers)
                                                              .FirstOrDefaultAsync(q => q.Id.Equals(questionId) && q.UserId.Equals(userId.ToString()));
-
-                //var dtoQuestion = _mapper.Map<DtoDeletedQuestion>(questionToBeDeleted);
 
                 if (questionToBeDeleted is null)
                     return CommonResponse<DtoDeletedQuestion>.Response("Question doesn't exists", false, System.Net.HttpStatusCode.NotFound, null);
@@ -390,8 +421,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<DtoDeletedQuestion>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
-
-        public async Task<CommonResponse<DtoDisabledQuestion>> UnDisableQuestion
+        /// <summary>
+        ///     Un disable a question of a user method implementation.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="questionId"> The id of the question </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoDisabledQuestion"/>
+        /// </returns>
+        public async Task<CommonResponse<DtoDisabledQuestion>> 
+        UnDisableQuestion
         (
             Guid userId,
             Guid questionId
@@ -434,8 +473,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<DtoDisabledQuestion>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
-
-        public async Task<CommonResponse<DtoQuestionAnswers>> GetQuestionWithAnswersAndChildAnswers
+        /// <summary>
+        ///     Get question with answers and answers with answers method implementation.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="questionId"> The id of the question </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoQuestionAnswers"/>
+        /// </returns>
+        public async Task<CommonResponse<DtoQuestionAnswers>> 
+        GetQuestionWithAnswersAndChildAnswers
         (
             Guid userId,
             Guid questionId
@@ -467,8 +514,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<DtoQuestionAnswers>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
-
-        public async Task<CommonResponse<DtoQuestionAnswers>> GetQuestionWithAnswersNoChildAnswers
+        /// <summary>
+        ///     Get questions with answers method implementation.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="questionId"> The id of the question </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoQuestionAnswers"/>
+        /// </returns>
+        public async Task<CommonResponse<DtoQuestionAnswers>> 
+        GetQuestionWithAnswersNoChildAnswers
         (
             Guid userId,
             Guid questionId

@@ -5,15 +5,16 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace FAQ.SECURITY.ApplicationAuthorizationService.ServiceInterface
 {
     /// <summary>
-    ///     A interface that provides functionality of the API.
+    ///     A interface that provides security functionality for the API.
     /// </summary>
     public interface IApiKeyAuthorizationFilter
     {
         #region Method Declaration
-        void OnAuthorization
-       (
+        void 
+        OnAuthorization
+        (
            AuthorizationFilterContext context
-       );
+        );
         #endregion
     }
 }

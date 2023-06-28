@@ -18,7 +18,8 @@ namespace FAQ.ACCOUNT.AccountService.ServiceInterface
         /// <param name="userId"> Id of the user of type <see cref="string"/> </param>
         /// <param name="otp"> otp of type <see cref="string"/>  </param>
         /// <returns> A Object response of type : <see cref="CommonResponse{T}"/> where T is <seealso cref="string"/> </returns>
-        Task<CommonResponse<string>> ConfirmEmail
+        Task<CommonResponse<string>> 
+        ConfirmEmail
         (
             string userId,
             string otp
@@ -30,7 +31,8 @@ namespace FAQ.ACCOUNT.AccountService.ServiceInterface
         /// <param name="picUpload"> <see cref="DtoProfilePicUpload"/> object </param>
         /// <param name="webHostEnvironment"> <see cref="IWebHostEnvironment"/> information </param>
         /// <returns> <see cref="CommonResponse{T}"/> where T is <see cref="DtoProfilePicUpload"/> </returns>
-        Task<CommonResponse<DtoProfilePicUpload>> UploadProfilePicture
+        Task<CommonResponse<DtoProfilePicUpload>> 
+        UploadProfilePicture
         (
             Guid userId,
             DtoProfilePicUpload picUpload,

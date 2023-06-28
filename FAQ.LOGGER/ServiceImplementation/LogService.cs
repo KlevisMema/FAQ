@@ -42,7 +42,8 @@ namespace FAQ.LOGGER.ServiceImplementation
         /// <param name="methodName"> Name of the method  of type <see cref="string"/> </param>
         /// <param name="UserId"> Id of the user value of type <see cref="Guid"/> </param>
         /// <returns> Nothing </returns>
-        public async Task CreateLogException
+        public async Task 
+        CreateLogException
         (
             Exception ex,
             string methodName,
@@ -81,7 +82,8 @@ namespace FAQ.LOGGER.ServiceImplementation
         /// <param name="methodName"> Name of the method  of type <see cref="string"/> </param>
         /// <param name="userId"> Id of the user value of type <see cref="Guid"/> </param>
         /// <returns> Nothing </returns>
-        public async Task CreateLogAction
+        public async Task 
+        CreateLogAction
         (
             string description,
             string methodName,
@@ -118,7 +120,8 @@ namespace FAQ.LOGGER.ServiceImplementation
         /// <param name="ex"> The exeption object of type <see cref="Exception"/> </param>
         /// <param name="method"> Method value of type <see cref="string"/> </param>
         /// <returns> Nothing </returns>
-        private void LogException
+        private void 
+        LogException
         (
             Exception ex,
             string method

@@ -16,7 +16,8 @@ namespace FAQ.ACCOUNT.AuthorizationService.Interfaces
         /// </summary>
         /// <param name="register"> Dto register object </param>
         /// <returns> A  object  response of <see cref="CommonResponse{T}"/>' where <see langword="T"/> is <seealso cref="DtoRegister"/> </returns>
-        Task<CommonResponse<DtoRegister>> Register
+        Task<CommonResponse<DtoRegister>> 
+        Register
         (
             DtoRegister register
         );

@@ -23,7 +23,8 @@ namespace FAQ.DAL.Seeders
         /// <param name="applicationBuilder"> App Builder of type <see cref="IApplicationBuilder"/> </param>
         /// <param name="configuration"> Cofiguration of type <see cref="IConfiguration"/> </param>
         /// <returns> Nothing </returns>
-        public static async Task SeedLogTypesAsync
+        public static async Task 
+        SeedLogTypesAsync
         (
             IApplicationBuilder applicationBuilder
         )
@@ -46,7 +47,6 @@ namespace FAQ.DAL.Seeders
                 }
 
             }
-
         }
 
         #endregion

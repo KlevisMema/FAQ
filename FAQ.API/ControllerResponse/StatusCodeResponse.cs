@@ -9,7 +9,7 @@ namespace FAQ.API.ControllerResponse
 {
     /// <summary>
     ///     A class that provides statuss code response to be used in controllers.
-    ///     Provides better code readablility.
+    ///     Provides better code readablility in the controller part.
     /// </summary>
     /// <typeparam name="T"> Any type of class </typeparam>
     public class StatusCodeResponse<T> : ControllerBase where T : class

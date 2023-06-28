@@ -14,7 +14,8 @@
         /// <param name="methodName"> Name of the method  of type <see cref="string"/> </param>
         /// <param name="UserId"> Id of the user value of type <see cref="Guid"/> </param>
         /// <returns> Nothing </returns>
-        Task CreateLogException
+        Task 
+        CreateLogException
         (
             Exception ex,
             string methodName,
@@ -27,7 +28,8 @@
         /// <param name="methodName"> Name of the method  of type <see cref="string"/> </param>
         /// <param name="userId"> Id of the user value of type <see cref="Guid"/> </param>
         /// <returns> Nothing </returns>
-        Task CreateLogAction
+        Task 
+        CreateLogAction
         (
             string description,
             string methodName,

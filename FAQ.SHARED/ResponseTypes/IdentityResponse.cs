@@ -65,7 +65,8 @@ namespace FAQ.SHARED.ResponseTypes
         /// <param name="Value"> Object <see cref="T"/> value, it's nullable </param>
         /// <param name="identityErrors"> Collection of <see cref="IdentityError"/> values, it's nullable </param>
         /// <returns> <see cref="IdentityResponse{T}"/> </returns>
-        public static IdentityResponse<T> Response
+        public static IdentityResponse<T> 
+        Response
         (
             string? message,
             bool succsess,

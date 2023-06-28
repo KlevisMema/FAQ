@@ -8,54 +8,55 @@ using FAQ.LOGGER.ServiceInterface;
 using Microsoft.EntityFrameworkCore;
 using FAQ.BLL.RepositoryService.Interfaces;
 using FAQ.EMAIL.EmailService.ServiceInterface;
+using FAQ.BLL.RepositoryService.BaseServices;
 #endregion
 
 namespace FAQ.BLL.RepositoryService.Implementation
 {
     /// <summary>
-    /// 
+    ///     A Service class that proviced functionalities for
+    ///     answer by implementing the <see cref="IAnswerService"/> interface.
     /// </summary>
-    public class AnswerService : IAnswerService
+    public class AnswerService : CommonServices, IAnswerService
     {
+        #region Properties / Constructor / Injections
         /// <summary>
-        /// 
+        ///     The <see cref="IEmailSender"/>
         /// </summary>
-        private readonly IMapper _mapper;
-        /// <summary>
-        /// 
-        /// </summary>
-        private readonly ApplicationDbContext _db;
-        /// <summary>
-        /// 
-        /// </summary>
-        private readonly ILogService _log;
-
         private readonly IEmailSender _emailSender;
-
         /// <summary>
-        /// 
+        ///     Create a new instance of <see cref="AnswerService"/>.
         /// </summary>
-        /// <param name="db"></param>
-        /// <param name="mapper"></param>
-        /// <param name="logService"></param>
+        /// <param name="db"> The <see cref="ApplicationDbContext"/> </param>
+        /// <param name="mapper"> The <see cref="IMapper"/> </param>
         public AnswerService
         (
             IMapper mapper,
             ILogService log,
             ApplicationDbContext db,
             IEmailSender emailSender
-        )
+        ) : base(mapper, log, db)
         {
-            _db = db;
-            _log = log;
-            _mapper = mapper;
             _emailSender = emailSender;
         }
+        #endregion
 
-        public async Task<CommonResponse<List<DtoGetAnswer>>> GetAnswersOfQuestion
+        #region Methods implementation
+
+        /// <summary>
+        ///     Get answers of a quetion for a user, method implementation.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="questionId"> The id of the question </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="List{T}"/>
+        ///     and T is <see cref="DtoGetAnswer"/>.
+        /// </returns>
+        public async Task<CommonResponse<List<DtoGetAnswer>>>
+        GetAnswersOfQuestion
         (
-            Guid userId,
-            Guid questionId
+          Guid userId,
+          Guid questionId
         )
         {
             try
@@ -78,8 +79,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<List<DtoGetAnswer>>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
-
-        public async Task<CommonResponse<DtoCreateAnswer>> CreateAnswer
+        /// <summary>
+        ///     Create a answer to to a question for a user, method implementation.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="dtoCreateAnswer"> the <see cref="DtoCreateAnswer"/> object </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoCreateAnswer"/>.
+        /// </returns>
+        public async Task<CommonResponse<DtoCreateAnswer>>
+        CreateAnswer
         (
             Guid userId,
             DtoCreateAnswer dtoCreateAnswer
@@ -107,8 +116,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<DtoCreateAnswer>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
-
-        public async Task<CommonResponse<DtoAnswerOfAnswer>> CreateAnswerOfAnAnswer
+        /// <summary>
+        ///     Create a answer for a answer, method implementation.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="answerOfAnswer"> The <see cref="DtoAnswerOfAnswer"/> object </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoAnswerOfAnswer"/>
+        /// </returns>
+        public async Task<CommonResponse<DtoAnswerOfAnswer>>
+        CreateAnswerOfAnAnswer
         (
             Guid userId,
             DtoAnswerOfAnswer answerOfAnswer
@@ -136,8 +153,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<DtoAnswerOfAnswer>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
-
-        public async Task<CommonResponse<DtoEditAnswer>> EditAnswer
+        /// <summary>
+        ///     Edit an answer of a user
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="editAnswer"> The <see cref="DtoEditAnswer"/> </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoEditAnswer"/>.
+        /// </returns>
+        public async Task<CommonResponse<DtoEditAnswer>>
+        EditAnswer
         (
             Guid userId,
             DtoEditAnswer editAnswer
@@ -170,8 +195,16 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<DtoEditAnswer>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
-
-        public async Task<CommonResponse<DtoDeleteAnswer>> DeleteAnswer
+        /// <summary>
+        ///     Delete an answer of a quetion of a user, method implementation.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="answerId"> The id of the answer </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoDeleteAnswer"/>.
+        /// </returns>
+        public async Task<CommonResponse<DtoDeleteAnswer>>
+        DeleteAnswer
         (
             Guid userId,
             Guid answerId
@@ -204,6 +237,8 @@ namespace FAQ.BLL.RepositoryService.Implementation
                 return CommonResponse<DtoDeleteAnswer>.Response("Internal server error!", false, System.Net.HttpStatusCode.InternalServerError, null);
             }
         }
+
+        #endregion
 
     }
 }

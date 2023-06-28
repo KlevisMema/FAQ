@@ -84,7 +84,8 @@ namespace FAQ.ACCOUNT.AuthorizationService.Implementation
         /// </summary>
         /// <param name="logIn"> Login object of type <see cref="DtoLogin"/> </param>
         /// <returns> A object response of <see cref="CommonResponse{DtoLogin}"/> where <see langword="T"/> is <seealso cref="DtoLogin"/> </returns>
-        public async Task<CommonResponse<DtoLogin>> Login
+        public async Task<CommonResponse<DtoLogin>> 
+        Login
         (
             DtoLogin logIn
         )

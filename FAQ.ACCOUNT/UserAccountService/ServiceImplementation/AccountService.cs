@@ -21,7 +21,7 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
     /// </summary>
     public class AccountService : IAccountService
     {
-        #region Services Injection
+        #region Constructor and Properties
         /// <summary>
         ///     Log service
         /// </summary>
@@ -56,7 +56,7 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
         private readonly IEmailSender _emailSender;
 
         /// <summary>
-        ///     Services Injection
+        ///     The <see cref="AccountService"/> constructor
         /// </summary>
         /// <param name="log"> Log Service </param>
         /// <param name="userManager"> User Manager Service </param>
@@ -92,7 +92,8 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
         /// <param name="userId"> Id of the user of type <see cref="string"/> </param>
         /// <param name="otp"> otp of type <see cref="string"/>  </param>
         /// <returns> A Object response of type : <see cref="CommonResponse{T}"/> where T is <seealso cref="string"/> </returns>
-        public async Task<CommonResponse<string>> ConfirmEmail
+        public async Task<CommonResponse<string>> 
+        ConfirmEmail
         (
             string userId,
             string otp
@@ -138,7 +139,8 @@ namespace FAQ.ACCOUNT.AccountService.ServiceImplementation
         /// <param name="picUpload"> <see cref="DtoProfilePicUpload"/> object </param>
         /// <param name="webHostEnvironment"> <see cref="IWebHostEnvironment"/> information </param>
         /// <returns> <see cref="CommonResponse{T}"/> where T is <see cref="DtoProfilePicUpload"/> </returns>
-        public async Task<CommonResponse<DtoProfilePicUpload>> UploadProfilePicture
+        public async Task<CommonResponse<DtoProfilePicUpload>> 
+        UploadProfilePicture
         (
             Guid userId,
             DtoProfilePicUpload picUpload,

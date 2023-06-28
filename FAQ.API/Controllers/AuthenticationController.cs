@@ -48,13 +48,12 @@ namespace FAQ.API.Controllers
         #region Register Endpoint
 
         /// <summary>
+        ///     [POST] - 
         ///     Register user endpoint.
         ///     This endpoint is accessed by everyone by marking it with : <see cref="AllowAnonymousAttribute"/>.
-        ///     This is a post endpoint marked with : <see cref="HttpPostAttribute"/>.
         /// </summary>
         /// <param name="register"> 
-        ///     Register data object value of type <see cref="DtoRegister"/>,  
-        ///     this param should be send from a form its marked with : <see cref="FromFormAttribute"/>. 
+        ///     Register data object value of type <see cref="DtoRegister"/>.
         /// </param>
         /// <returns> <see cref="Task"/> of <see cref="CommonResponse{T}"/> where T is  <see cref="DtoRegister"/> </returns>
         [AllowAnonymous]
@@ -78,13 +77,11 @@ namespace FAQ.API.Controllers
         #region Login Endpoint
 
         /// <summary>
+        ///     [POST] - 
         ///     Login user endpoint.
-        ///     This endpoint is accessed by everyone by marking it with : <see cref="AllowAnonymousAttribute"/>.
-        ///     This is a post marked with : <see cref="HttpPostAttribute"/>.
         /// </summary>
         /// <param name="logIn">
-        ///     Login data object value of type <see cref="DtoLogin"/>,
-        ///     this parameter value should be send from a from its marked with : <see cref="FromFormAttribute"/>
+        ///     Login data object value of type <see cref="DtoLogin"/>.
         /// </param>
         /// <returns> <see cref="Task"/> of <see cref="CommonResponse{T}"/> where T is  <see cref="DtoLogin"/> </returns>
         [AllowAnonymous]

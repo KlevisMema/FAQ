@@ -202,8 +202,7 @@ namespace FAQ.API.Startup
 
             #endregion
 
-            #region Automapper services
-            Services.AddAutoMapper(typeof(TagMappings));
+            #region Automapper mappings
             Services.AddAutoMapper(typeof(UserMappings));
             Services.AddAutoMapper(typeof(AnswerMappings));
             Services.AddAutoMapper(typeof(QuestionMappings));

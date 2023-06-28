@@ -16,8 +16,7 @@ namespace FAQ.API.Controllers
     /// </summary>
     public class AccountController : BaseController
     {
-        #region Services Injection
-
+        #region Properties/Fields
         /// <summary>
         ///     A  <see langword="private"/> readonly field for <see cref="IAccountService"/>
         /// </summary>
@@ -26,9 +25,12 @@ namespace FAQ.API.Controllers
         ///     A  <see langword="private"/> readonly field for <see cref="IWebHostEnvironment"/>
         /// </summary>
         private readonly IWebHostEnvironment _webHostEnvironment;
+        #endregion
 
+        #region Constructor
         /// <summary>
-        ///     Inject services in constructor
+        ///     The <see cref="AccountController"/> controller.
+        ///     Injected <see cref="IAccountService"/> and <see cref="IWebHostEnvironment"/>.
         /// </summary>
         /// <param name="accountService"> Account service </param>
         /// <param name="webHostEnvironment"> Web Enviroment </param>
@@ -41,7 +43,6 @@ namespace FAQ.API.Controllers
             _accountService = accountService;
             _webHostEnvironment = webHostEnvironment;
         }
-
         #endregion
 
         #region Endpoints
@@ -52,8 +53,7 @@ namespace FAQ.API.Controllers
         ///     Its a post endpoint marked with : <see cref="HttpPostAttribute"/>.
         /// </summary>
         /// <param name="userId"> 
-        ///     Id of the user value of type <see cref="Guid"/>,
-        ///     this param should be send from route, its marked with : <see cref="FromRouteAttribute"/>
+        ///     Id of the user value of type <see cref="Guid"/>.
         /// </param>
         /// <param name="otp"> One time password value of type <see cref="string"/> </param>
         /// <returns> 
@@ -65,7 +65,8 @@ namespace FAQ.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(CommonResponse<string>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(CommonResponse<string>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(CommonResponse<string>))]
-        public async Task<ActionResult<CommonResponse<string>>> ConfrimEmail
+        public async Task<ActionResult<CommonResponse<string>>> 
+        ConfrimEmail
         (
             [FromRoute] Guid userId,
             string otp
@@ -73,7 +74,6 @@ namespace FAQ.API.Controllers
         {
             return StatusCodeResponse<string>.ControllerResponse(await _accountService.ConfirmEmail(userId.ToString(), otp));
         }
-
         /// <summary>
         ///     Upload a profile picture for a user endpoint. 
         ///     This endpoint is accessed by everyone by marking it with : <see cref="AllowAnonymousAttribute"/>.
@@ -81,11 +81,9 @@ namespace FAQ.API.Controllers
         /// </summary>
         /// <param name="userId"> 
         ///     <see cref="Guid"/> ID of the user.
-        ///     This param should be send from route, its marked with : <see cref="FromRouteAttribute"/>
         /// </param>
         /// <param name="picUpload">
         ///     <see cref="DtoProfilePicUpload"/> object.
-        ///      This param should be send from form, its marked with : <see cref="FromFormAttribute"/>
         /// </param>
         /// <returns> 
         ///     <see cref="ActionResult{TValue}"/> where TValue <see cref="CommonResponse{T}"/>
@@ -97,7 +95,8 @@ namespace FAQ.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(CommonResponse<DtoProfilePicUpload>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(CommonResponse<DtoProfilePicUpload>))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(CommonResponse<DtoProfilePicUpload>))]
-        public async Task<ActionResult<CommonResponse<DtoProfilePicUpload>>> UploadProfilePicture
+        public async Task<ActionResult<CommonResponse<DtoProfilePicUpload>>> 
+        UploadProfilePicture
         (
             [FromRoute] Guid userId,
             [FromForm] DtoProfilePicUpload picUpload

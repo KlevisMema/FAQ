@@ -13,6 +13,7 @@ namespace FAQ.DAL.DataBase
     /// </summary>
     public class ApplicationDbContext : IdentityDbContext<User>
     {
+        #region Constructors
         public ApplicationDbContext()
         {
         }
@@ -20,6 +21,7 @@ namespace FAQ.DAL.DataBase
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
+        #endregion
 
         #region Db sets
 
@@ -52,10 +54,13 @@ namespace FAQ.DAL.DataBase
 
         #region Fluent Api
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void
+        OnModelCreating
+        (
+            ModelBuilder builder
+        )
         {
             base.OnModelCreating(builder);
-
 
             #region Configure M:M between Question and Tag
 

@@ -15,7 +15,8 @@ namespace FAQ.ACCOUNT.AuthenticationService.ServiceInterface
         /// </summary>
         /// <param name="user"> User View Model object of type <see cref="DtoUser"/> </param>
         /// <returns> Token of type <see cref="string"/></returns>
-        string CreateToken
+        string 
+        CreateToken
         (
             DtoUser user
         );

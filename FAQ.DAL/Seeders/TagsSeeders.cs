@@ -20,9 +20,9 @@ namespace FAQ.DAL.Seeders
         ///     Create tags.
         /// </summary>
         /// <param name="applicationBuilder"> App Builder of type <see cref="IApplicationBuilder"/> </param>
-        /// <param name="configuration"> Cofiguration of type <see cref="IConfiguration"/> </param>
         /// <returns> Nothing </returns>
-        public static async Task SeedTagsAsync
+        public static async Task 
+        SeedTagsAsync
         (
             IApplicationBuilder applicationBuilder
         )

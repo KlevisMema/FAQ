@@ -5,75 +5,180 @@ using FAQ.SHARED.ResponseTypes;
 
 namespace FAQ.BLL.RepositoryService.Interfaces
 {
+    /// <summary>
+    ///     An interface that provides un implemented 
+    ///     methods in the context of the logic of question.
+    /// </summary>
     public interface IQuestionService
     {
-        Task<CommonResponse<DtoCreateQuestionReturn>> CreateQuestion
+        #region Methods declaration
+        /// <summary>
+        ///     Create a question for a user method declaration.
+        /// </summary>
+        /// <param name="userId"> The user Id </param>
+        /// <param name="newQuestion"> The <see cref="DtoCreateQuestion"/> object </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoCreateQuestionReturn"/>
+        /// </returns>
+        Task<CommonResponse<DtoCreateQuestionReturn>>
+        CreateQuestion
         (
-            Guid userId,
-            DtoCreateQuestion newQuestion
+           Guid userId,
+           DtoCreateQuestion newQuestion
         );
-
-        Task<CommonResponse<List<DtoGetQuestion>>> GetAllNonDisabledQuestions
+        /// <summary>
+        ///     Get all questions from questions table
+        ///     method declaration.that are not disabled.
+        /// </summary>
+        /// <param name="userId"> The <see cref="Guid"/> user id. </param>
+        /// <returns> 
+        ///     <see cref="Task{TResult}"/> where TResult is <see cref="CommonResponse{T}"/> 
+        ///     where T is <see cref="List{T}"/> and T is <see cref="DtoGetQuestion"/>. 
+        /// </returns>
+        Task<CommonResponse<List<DtoGetQuestion>>>
+        GetAllNonDisabledQuestions
         (
           Guid userId
         );
-
-        Task<CommonResponse<DtoDeletedQuestion>> DeleteQuestion
+        /// <summary>
+        ///     Delete a question of a user method declaration.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="questionId"> The question id </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoDeletedQuestion"/>
+        /// </returns>
+        Task<CommonResponse<DtoDeletedQuestion>>
+        DeleteQuestion
         (
             Guid userId,
             Guid questionId
         );
-
-        Task<CommonResponse<List<DtoGetQuestion>>> GetAllQuestions
+        /// <summary>
+        ///     Get all questions from questions table
+        ///     method declaration.
+        /// </summary>
+        /// <param name="userId"> The <see cref="Guid"/> user id. </param>
+        /// <returns> 
+        ///     <see cref="Task{TResult}"/> where TResult is <see cref="CommonResponse{T}"/> 
+        ///     where T is <see cref="List{T}"/> and T is <see cref="DtoGetQuestion"/>. 
+        /// </returns>
+        Task<CommonResponse<List<DtoGetQuestion>>>
+        GetAllQuestions
         (
             Guid userId
         );
-
-        Task<CommonResponse<DtoGetQuestion>> GetQuestion
+        /// <summary>
+        ///     Get a question from questions table
+        ///     method declaration.
+        /// </summary>
+        /// <param name="userId"> The <see cref="Guid"/> user id </param>
+        /// <returns> 
+        ///     <see cref="Task{TResult}"/> where TResult is <see cref="CommonResponse{T}"/> 
+        ///     where T is <see cref="DtoGetQuestion"/>.
+        /// </returns>
+        Task<CommonResponse<DtoGetQuestion>>
+        GetQuestion
         (
             Guid userId,
             Guid qestionId
         );
-
-        Task<CommonResponse<DtoUpdateQuestion>> UpdateQuestion
+        /// <summary>
+        ///     Update a question of a user method declaration.
+        /// </summary>
+        /// <param name="userId"> The user Id </param>
+        /// <param name="question"> The <see cref="DtoUpdateQuestion"/> </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoUpdateQuestion"/>
+        /// </returns>
+        Task<CommonResponse<DtoUpdateQuestion>>
+        UpdateQuestion
         (
             Guid userId,
             DtoUpdateQuestion question
         );
-
-        Task<CommonResponse<DtoDisabledQuestion>> DisableQuestion
+        /// <summary>
+        ///     Disable a question of a user method declaration.        /// </summary>
+        /// <param name="userId"> The user id </param>
+        /// <param name="questionId"> The question id</param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoDisabledQuestion"/>
+        /// </returns>
+        Task<CommonResponse<DtoDisabledQuestion>>
+        DisableQuestion
         (
             Guid userId,
             Guid questionId
         );
-
-        Task<CommonResponse<List<DtoDisabledQuestion>>> GetAllDisabledQuesions
+        /// <summary>
+        ///     Get all the disabled question of a user method declaration.
+        /// </summary>
+        /// <param name="userId"> The user id </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="List{T}"/> and 
+        ///     T is <see cref="DtoDisabledQuestion"/>
+        /// </returns>
+        Task<CommonResponse<List<DtoDisabledQuestion>>>
+        GetAllDisabledQuesions
         (
             Guid userId
         );
-
-        Task<CommonResponse<DtoDisabledQuestion>> GetDisabledQuesion
+        /// <summary>
+        ///     Get all disabled quesitons of a user method declaration.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="questionId"> The id of the question </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoDisabledQuestion"/>
+        /// </returns>
+        Task<CommonResponse<DtoDisabledQuestion>>
+        GetDisabledQuesion
         (
            Guid userId,
            Guid questionId
         );
-
-        Task<CommonResponse<DtoDisabledQuestion>> UnDisableQuestion
+        /// <summary>
+        ///     Un disable a question of a user method declaration.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="questionId"> The id of the question </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoDisabledQuestion"/>
+        /// </returns>
+        Task<CommonResponse<DtoDisabledQuestion>>
+        UnDisableQuestion
         (
             Guid userId,
             Guid questionId
         );
-
-        Task<CommonResponse<DtoQuestionAnswers>> GetQuestionWithAnswersAndChildAnswers
+        /// <summary>
+        ///     Get question with answers and answers with answers method declaration.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="questionId"> The id of the question </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoQuestionAnswers"/>
+        /// </returns>
+        Task<CommonResponse<DtoQuestionAnswers>>
+        GetQuestionWithAnswersAndChildAnswers
         (
             Guid userId,
             Guid questionId
         );
-
-        Task<CommonResponse<DtoQuestionAnswers>> GetQuestionWithAnswersNoChildAnswers
+        /// <summary>
+        ///     Get questions with answers method declaration.
+        /// </summary>
+        /// <param name="userId"> The id of the user </param>
+        /// <param name="questionId"> The id of the question </param>
+        /// <returns>
+        ///     <see cref="CommonResponse{T}"/> where T => <see cref="DtoQuestionAnswers"/>
+        /// </returns>
+        Task<CommonResponse<DtoQuestionAnswers>>
+        GetQuestionWithAnswersNoChildAnswers
         (
              Guid userId,
             Guid questionId
         );
+        #endregion
     }
 }

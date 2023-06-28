@@ -36,7 +36,8 @@ namespace FAQ.SECURITY.ApplicationAuthorizationService.ServiceImplementation
 
         #region Implementation
 
-        public void OnAuthorization
+        public void 
+        OnAuthorization
         (
             AuthorizationFilterContext context
         )

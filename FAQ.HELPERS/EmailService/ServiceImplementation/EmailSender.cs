@@ -51,7 +51,8 @@ namespace FAQ.HELPERS.Helpers.Email
         /// </summary>
         /// <param name="userConfirmEmail"> User object Dto of type <see cref="DtoUserConfirmEmail"/> </param>
         /// <returns> Nothing </returns>
-        public async Task SendConfirmEmail
+        public async Task 
+        SendConfirmEmail
         (
             DtoUserConfirmEmail userConfirmEmail,
             string otp
@@ -112,7 +113,8 @@ namespace FAQ.HELPERS.Helpers.Email
         /// </summary>
         /// <param name="userId"> Id of the user </param>
         /// <returns> Nothig </returns>
-        public async Task SendEmailToDevTeam
+        public async Task 
+        SendEmailToDevTeam
         (
            Guid userId
         )
