@@ -19,6 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FAQ.EMAIL", "FAQ.HELPERS\FA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FAQ.LOGGER", "FAQ.LOGGER\FAQ.LOGGER.csproj", "{275F273A-7D12-4A8B-8586-58BD40E46FD6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0EA82550-B633-4F6B-8DAB-6F56B90A8EF6}"
+	ProjectSection(SolutionItems) = preProject
+		appSettings.txt = appSettings.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
