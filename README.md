@@ -33,6 +33,6 @@
   }
 ```
 ```
-"API_KEY": "a api 🗝",
+"API_KEY": "your api 🗝",
 ```
  3. Build and Run the project.
